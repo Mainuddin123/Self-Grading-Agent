@@ -6,7 +6,7 @@ A retrieval-augmented generation (RAG) agent that answers questions from a contr
 
 
 
-\## Overview
+## Overview
 
 
 
@@ -14,31 +14,31 @@ The Self-Grading RAG Agent is designed to reduce unsupported or hallucinated ans
 
 
 
-\- Document retrieval
+- Document retrieval
 
-\- Evidence-based answer generation
+- Evidence-based answer generation
 
-\- Evidence support checking
+- Evidence support checking
 
-\- Automatic self-grading
+- Automatic self-grading
 
-\- Confidence estimation
+- Confidence estimation
 
-\- Model fallback handling
+- Model fallback handling
 
-\- Evaluation across multiple question categories
+- Evaluation across multiple question categories
 
-\- Calibration analysis
+- Calibration analysis
 
-\- Automated tests
-
-
-
-The system is intentionally designed to return a controlled `NO\_SUPPORTED\_ANSWER` response when the retrieved evidence does not directly support the requested information.
+- Automated tests
 
 
 
-\## Architecture
+The system is intentionally designed to return a controlled `NO_SUPPORTED_ANSWER` response when the retrieved evidence does not directly support the requested information.
+
+
+
+## Architecture
 
 
 
@@ -46,83 +46,83 @@ The system is intentionally designed to return a controlled `NO\_SUPPORTED\_ANSW
 
 User Question
 
-&#x20;     |
+      |
 
-&#x20;     v
+      v
 
 Question Processing
 
-&#x20;     |
+      |
 
-&#x20;     v
+      v
 
 Document Retrieval
 
-&#x20;     |
+      |
 
-&#x20;     v
+      v
 
 Relevant Evidence
 
-&#x20;     |
+      |
 
-&#x20;     +----------------------+
+      +----------------------+
 
-&#x20;     |                      |
+      |                      |
 
-&#x20;     v                      v
+      v                      v
 
 Evidence Support Check    No Relevant Evidence
 
-&#x20;     |                      |
+      |                      |
 
-&#x20;     v                      v
+      v                      v
 
-Answer Generation       NO\_SUPPORTED\_ANSWER
+Answer Generation       NO_SUPPORTED_ANSWER
 
-&#x20;     |
+      |
 
-&#x20;     v
+      v
 
 Self-Grading
 
-&#x20;     |
+      |
 
-&#x20;     +-----------------------------+
+      +-----------------------------+
 
-&#x20;     |             |               |
+      |             |               |
 
-&#x20;     v             v               v
+      v             v               v
 
 Correctness     Relevance       Grounding
 
-&#x20;     |             |               |
+      |             |               |
 
-&#x20;     +-------------+---------------+
+      +-------------+---------------+
 
-&#x20;                   |
+                    |
 
-&#x20;                   v
+                    v
 
-&#x20;            Overall Score
+             Overall Score
 
-&#x20;                   |
+                    |
 
-&#x20;                   v
+                    v
 
-&#x20;             Confidence
+              Confidence
 
-&#x20;                   |
+                    |
 
-&#x20;                   v
+                    v
 
-&#x20;            Final Result
-
-
+             Final Result
 
 
 
-\# Key Features
+
+
+# Key Features
 
 
 
@@ -148,11 +148,11 @@ The generated answer is checked against the retrieved evidence instead of relyin
 
 Questions outside the available knowledge base can result in:
 
-&#x20;               NO\_RELEVANT\_SOURCES
+                NO_RELEVANT_SOURCES
 
-&#x20;                     or 
+                      or 
 
-&#x20;               NO\_SUPPORTED\_ANSWER
+                NO_SUPPORTED_ANSWER
 
 
 
@@ -218,7 +218,7 @@ ANSWERABLE
 
 UNANSWERABLE
 
-PARTIALLY\_SUPPORTED
+PARTIALLY_SUPPORTED
 
 TRAP
 
@@ -248,7 +248,7 @@ Confidence breakdown
 
 
 
-\# Project Structure
+# Project Structure
 
 
 
@@ -260,41 +260,41 @@ Self-Grading-Agent/
 
 â”‚   â”œâ”€â”€ docs/
 
-â”‚   â”‚   â”œâ”€â”€ 01\_remote\_work\_policy.txt
+â”‚   â”‚   â”œâ”€â”€ 01_remote_work_policy.txt
 
-â”‚   â”‚   â”œâ”€â”€ 02\_leave\_policy.txt
+â”‚   â”‚   â”œâ”€â”€ 02_leave_policy.txt
 
-â”‚   â”‚   â”œâ”€â”€ 03\_expense\_policy.txt
+â”‚   â”‚   â”œâ”€â”€ 03_expense_policy.txt
 
-â”‚   â”‚   â”œâ”€â”€ 04\_learning\_budget.txt
+â”‚   â”‚   â”œâ”€â”€ 04_learning_budget.txt
 
-â”‚   â”‚   â”œâ”€â”€ 05\_security\_policy.txt
+â”‚   â”‚   â”œâ”€â”€ 05_security_policy.txt
 
-â”‚   â”‚   â”œâ”€â”€ 06\_travel\_policy.txt
+â”‚   â”‚   â”œâ”€â”€ 06_travel_policy.txt
 
-â”‚   â”‚   â”œâ”€â”€ 07\_performance\_review.txt
+â”‚   â”‚   â”œâ”€â”€ 07_performance_review.txt
 
-â”‚   â”‚   â”œâ”€â”€ 08\_equipment\_policy.txt
+â”‚   â”‚   â”œâ”€â”€ 08_equipment_policy.txt
 
-â”‚   â”‚   â”œâ”€â”€ 09\_recruitment\_referral.txt
+â”‚   â”‚   â”œâ”€â”€ 09_recruitment_referral.txt
 
-â”‚   â”‚   â”œâ”€â”€ 10\_data\_retention.txt
+â”‚   â”‚   â”œâ”€â”€ 10_data_retention.txt
 
-â”‚   â”‚   â”œâ”€â”€ 11\_code\_of\_conduct.txt
+â”‚   â”‚   â”œâ”€â”€ 11_code_of_conduct.txt
 
-â”‚   â”‚   â””â”€â”€ 12\_parental\_benefits.txt
+â”‚   â”‚   â””â”€â”€ 12_parental_benefits.txt
 
 â”‚   â”‚
 
 â”‚   â”œâ”€â”€ evaluation.json
 
-â”‚   â””â”€â”€ evaluation\_results.json
+â”‚   â””â”€â”€ evaluation_results.json
 
 â”‚
 
 â”œâ”€â”€ reports/
 
-â”‚   â””â”€â”€ calibration\_results.json
+â”‚   â””â”€â”€ calibration_results.json
 
 â”‚
 
@@ -314,17 +314,17 @@ Self-Grading-Agent/
 
 â”‚   â”œâ”€â”€ retriever.py
 
-â”‚   â”œâ”€â”€ run\_calibration.py
+â”‚   â”œâ”€â”€ run_calibration.py
 
-â”‚   â”œâ”€â”€ test\_agent.py
+â”‚   â”œâ”€â”€ test_agent.py
 
-â”‚   â””â”€â”€ test\_retriever.py
+â”‚   â””â”€â”€ test_retriever.py
 
 â”‚
 
 â”œâ”€â”€ .gitignore
 
-â”œâ”€â”€ evaluation\_results.json
+â”œâ”€â”€ evaluation_results.json
 
 â”œâ”€â”€ requirements.txt
 
@@ -334,7 +334,7 @@ Self-Grading-Agent/
 
 
 
-\# Technologies Used:
+# Technologies Used:
 
 
 
@@ -398,7 +398,7 @@ pip install -r requirements.txt
 
 
 
-\# Environment Configuration
+# Environment Configuration
 
 
 
@@ -406,7 +406,7 @@ Create a .env file in the project root and configure the required Google API cre
 
 
 
-Example: GOOGLE\_API\_KEY = your_api_key_here
+Example: GOOGLE_API_KEY = your_api_key_here
 
 
 
@@ -416,7 +416,7 @@ Do not commit API keys or other secrets to GitHub.
 
 
 
-\# Running the Agent
+# Running the Agent
 
 
 
@@ -440,7 +440,7 @@ The system retrieves supporting documents, generates an answer, evaluates it, an
 
 
 
-\# Example Supported Question
+# Example Supported Question
 
 How many paid annual leave days do full-time employees receive?
 
@@ -466,19 +466,19 @@ STATUS: SUCCESS
 
 
 
-\# Unsupported Question Handling
+# Unsupported Question Handling
 
 
 
 For information that is not supported by the provided documents, the system can return:
 
-NO\_RELEVANT\_SOURCES
+NO_RELEVANT_SOURCES
 
 
 
 For retrieved evidence that does not directly support the requested concept, the system can return:
 
-NO\_SUPPORTED\_ANSWER
+NO_SUPPORTED_ANSWER
 
 
 
@@ -496,7 +496,7 @@ Evidence support check: NOT SUPPORTED
 
 
 
-Returning NO\_SUPPORTED\_ANSWER.
+Returning NO_SUPPORTED_ANSWER.
 
 
 
@@ -506,7 +506,7 @@ This behaviour is an important part of the project's hallucination-resistance de
 
 
 
-\# Automated Evaluation
+# Automated Evaluation
 
 
 
@@ -522,7 +522,7 @@ ANSWERABLE
 
 UNANSWERABLE
 
-PARTIALLY\_SUPPORTED
+PARTIALLY_SUPPORTED
 
 TRAP
 
@@ -548,19 +548,19 @@ Average attempts: 1.00
 
 
 
-\# Category results:
+# Category results:
 
 ANSWERABLE          10/10 passed
 
 UNANSWERABLE         5/5 passed
 
-PARTIALLY\_SUPPORTED  5/5 passed
+PARTIALLY_SUPPORTED  5/5 passed
 
 TRAP                 4/4 passed
 
 
 
-\# Automated Tests
+# Automated Tests
 
 
 
@@ -570,7 +570,7 @@ Current test suite:  6 passed
 
 
 
-\# Tests cover:
+# Tests cover:
 
 
 
@@ -588,11 +588,11 @@ Hallucination resistance
 
 
 
-\# Calibration Evaluation
+# Calibration Evaluation
 
 
 
-Run: python src/run\_calibration.py
+Run: python src/run_calibration.py
 
 
 
@@ -614,7 +614,7 @@ ECE                 : 0.0896
 
 
 
-Results are saved to: reports/calibration\_results.json
+Results are saved to: reports/calibration_results.json
 
 
 
@@ -622,11 +622,11 @@ Results are saved to: reports/calibration\_results.json
 
 
 
-**The project stores evaluation results in:** evaluation\_results.json
+**The project stores evaluation results in:** evaluation_results.json
 
 
 
-and calibration results in: reports/calibration\_results.json
+and calibration results in: reports/calibration_results.json
 
 These files provide reproducible evidence of the evaluation performed on the agent.
 
@@ -634,7 +634,7 @@ These files provide reproducible evidence of the evaluation performed on the age
 
 
 
-\# Safety and Reliability Design
+# Safety and Reliability Design
 
 
 
@@ -662,7 +662,7 @@ Measure confidence calibration separately.
 
 
 
-\# Limitations
+# Limitations
 
 
 
@@ -680,7 +680,7 @@ The system does not provide general web-based knowledge retrieval.
 
 
 
-\# Future Improvements
+# Future Improvements
 
 
 
@@ -742,7 +742,7 @@ https://github.com/Mainuddin123/Self-Grading-Agent
 
 
 
-\### 2. Verify it
+### 2. Verify it
 
 
 
@@ -753,6 +753,7 @@ Run:
 ```powershell
 
 Get-Content README.md
+
 
 
 
