@@ -282,7 +282,8 @@ The application is deployed using **Streamlit Community Cloud**.
 
 ### Live Demo
 
-🔗 **Streamlit App:** PASTE_YOUR_LIVE_APP_URL_HERE
+🔗 **Streamlit App:**
+https://self-grading-rag-agentgit-pwxgd5jgkdepjelnpzj5de.streamlit.app/
 
 ### Source Code
 
