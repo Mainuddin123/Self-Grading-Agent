@@ -1,0 +1,13 @@
+Information Security Policy
+
+Effective date: March 1, 2026.
+
+Employees must use multi-factor authentication for company accounts where MFA is available.
+
+Company credentials must never be shared with another person.
+
+Sensitive company files must be stored only in approved company storage systems.
+
+Lost or stolen company devices must be reported to IT Security within 24 hours of discovery.
+
+Employees must not install unapproved software on managed company devices without IT approval.

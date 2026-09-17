@@ -1,0 +1,29 @@
+{
+  "total_samples": 24,
+  "average_confidence": 0.7229,
+  "accuracy": 0.7917,
+  "calibration_error": 0.0687,
+  "ece": 0.0896,
+  "confidence_breakdown": {
+    "high": {
+      "count": 19,
+      "correct": 19,
+      "accuracy": 1.0
+    },
+    "medium": {
+      "count": 0,
+      "correct": 0,
+      "accuracy": 0.0
+    },
+    "low": {
+      "count": 0,
+      "correct": 0,
+      "accuracy": 0.0
+    },
+    "unknown": {
+      "count": 5,
+      "correct": 0,
+      "accuracy": 0.0
+    }
+  }
+}

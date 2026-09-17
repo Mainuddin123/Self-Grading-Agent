@@ -1,0 +1,176 @@
+{
+  "total_questions": 24,
+  "test_cases": [
+    {
+      "id": 1,
+      "category": "ANSWERABLE",
+      "question": "How many days of paid annual leave do full-time employees receive?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Full-time employees receive 18 days of paid annual leave per calendar year."
+    },
+    {
+      "id": 2,
+      "category": "ANSWERABLE",
+      "question": "How many days per week may employees work remotely?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Employees may work remotely up to three days per week with manager approval."
+    },
+    {
+      "id": 3,
+      "category": "ANSWERABLE",
+      "question": "What is the annual learning budget for a full-time employee?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "The annual learning budget is INR 20,000."
+    },
+    {
+      "id": 4,
+      "category": "ANSWERABLE",
+      "question": "How long are routine system logs retained?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Routine system logs are retained for 90 days."
+    },
+    {
+      "id": 5,
+      "category": "ANSWERABLE",
+      "question": "What is the standard replacement lifecycle for company laptops?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Standard company laptops are replaced on a four-year lifecycle unless the device is damaged beyond economical repair."
+    },
+    {
+      "id": 6,
+      "category": "ANSWERABLE",
+      "question": "What is the domestic hotel reimbursement limit?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Hotel reimbursement is capped at INR 6,000 per night for domestic travel unless an exception is approved in advance."
+    },
+    {
+      "id": 7,
+      "category": "ANSWERABLE",
+      "question": "How long must financial records be retained?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Financial records must be retained for 7 years."
+    },
+    {
+      "id": 8,
+      "category": "ANSWERABLE",
+      "question": "When are formal performance reviews conducted?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Formal performance reviews occur twice each year, in June and December."
+    },
+    {
+      "id": 9,
+      "category": "ANSWERABLE",
+      "question": "How much is the employee referral bonus?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "The referral bonus is INR 10,000 when an eligible referred candidate is hired and completes 90 calendar days of employment."
+    },
+    {
+      "id": 10,
+      "category": "ANSWERABLE",
+      "question": "How many weeks of paid parental leave are provided under the standard benefit?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "The standard parental leave benefit provides up to 12 weeks of paid leave for eligible employees."
+    },
+
+    {
+      "id": 11,
+      "category": "UNANSWERABLE",
+      "question": "What is the company's dental insurance coverage?",
+      "expected_status": "NO_RELEVANT_SOURCES",
+      "reference_answer": null
+    },
+    {
+      "id": 12,
+      "category": "UNANSWERABLE",
+      "question": "What is the company's employee stock trading policy?",
+      "expected_status": "NO_RELEVANT_SOURCES",
+      "reference_answer": null
+    },
+    {
+      "id": 13,
+      "category": "UNANSWERABLE",
+      "question": "What is the company's gym membership reimbursement policy?",
+      "expected_status": "NO_RELEVANT_SOURCES",
+      "reference_answer": null
+    },
+    {
+      "id": 14,
+      "category": "UNANSWERABLE",
+      "question": "What is the company's annual bonus percentage?",
+      "expected_status": "NO_RELEVANT_SOURCES",
+      "reference_answer": null
+    },
+    {
+      "id": 15,
+      "category": "UNANSWERABLE",
+      "question": "Who is the president of India?",
+      "expected_status": "NO_RELEVANT_SOURCES",
+      "reference_answer": null
+    },
+
+    {
+      "id": 16,
+      "category": "PARTIALLY_SUPPORTED",
+      "question": "Can every employee receive the INR 20,000 annual learning budget?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "The policy states that each full-time employee has the budget, while new employees become eligible after 30 calendar days of employment."
+    },
+    {
+      "id": 17,
+      "category": "PARTIALLY_SUPPORTED",
+      "question": "Can employees work remotely every day if they want to?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Employees may work remotely up to three days per week with manager approval. Fully remote arrangements require department-head and HR approval."
+    },
+    {
+      "id": 18,
+      "category": "PARTIALLY_SUPPORTED",
+      "question": "Can unused learning budget be carried over to the next year?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "No. Unused learning budget does not roll over to the next year and does not convert to cash."
+    },
+    {
+      "id": 19,
+      "category": "PARTIALLY_SUPPORTED",
+      "question": "Can an employee always carry forward five days of annual leave?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "Unused annual leave may be carried forward for up to 5 days into the next calendar year."
+    },
+    {
+      "id": 20,
+      "category": "PARTIALLY_SUPPORTED",
+      "question": "Does a positive performance review guarantee a salary increase?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "No. A review rating does not by itself guarantee a salary increase, promotion, or bonus."
+    },
+
+    {
+      "id": 21,
+      "category": "TRAP",
+      "question": "The company allows employees to work remotely five days every week. Is this correct?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "No. The policy permits up to three remote-work days per week with manager approval."
+    },
+    {
+      "id": 22,
+      "category": "TRAP",
+      "question": "Standard company laptops are replaced every two years. Is this correct?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "No. Standard company laptops are replaced on a four-year lifecycle unless damaged beyond economical repair."
+    },
+    {
+      "id": 23,
+      "category": "TRAP",
+      "question": "Routine system logs are retained permanently. Is this correct?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "No. Routine system logs are retained for 90 days."
+    },
+    {
+      "id": 24,
+      "category": "TRAP",
+      "question": "Employees can share their company credentials with coworkers when necessary. Is this allowed?",
+      "expected_status": "SUCCESS",
+      "reference_answer": "No. Company credentials must never be shared with another person."
+    }
+  ]
+}

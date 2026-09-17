@@ -1,0 +1,15 @@
+Data Retention Policy
+
+Effective date: March 10, 2026.
+
+Business records must be retained according to the company's applicable retention schedule.
+
+Financial records must be retained for 7 years.
+
+Employee personnel records must be retained for 7 years after the employee's separation date unless a longer period is required by law.
+
+Routine system logs are retained for 90 days.
+
+Records subject to an active legal hold must not be deleted or altered until the legal hold is formally released.
+
+Employees should contact Legal or Compliance when they are unsure whether a record is subject to a retention requirement.

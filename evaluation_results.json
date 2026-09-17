@@ -1,0 +1,569 @@
+{
+    "summary": {
+        "total_questions": 24,
+        "passed_questions": 24,
+        "failed_questions": 0,
+        "pass_rate": 100.0,
+        "average_score": 0.7887,
+        "average_attempts": 1.0
+    },
+    "category_distribution": {
+        "ANSWERABLE": 10,
+        "UNANSWERABLE": 5,
+        "PARTIALLY_SUPPORTED": 5,
+        "TRAP": 4
+    },
+    "results": [
+        {
+            "id": 1,
+            "question": "How many days of paid annual leave do full-time employees receive?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Full-time employees receive 18 days of paid annual leave per calendar year.",
+            "answer": "Full-time employees receive 18 days of paid annual leave per calendar year (Source: 02_leave_policy.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "02_leave_policy.txt",
+                    "score": 0.8744567632675171
+                },
+                {
+                    "source": "02_leave_policy.txt",
+                    "score": 0.5952025651931763
+                },
+                {
+                    "source": "12_parental_benefits.txt",
+                    "score": 0.5686063170433044
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 2,
+            "question": "How many days per week may employees work remotely?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Employees may work remotely up to three days per week with manager approval.",
+            "answer": "Employees may work remotely up to three days per week with manager approval (Source: 01_remote_work_policy.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.8187314867973328
+                },
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.6239832639694214
+                },
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.5876213908195496
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 3,
+            "question": "What is the annual learning budget for a full-time employee?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "The annual learning budget is INR 20,000.",
+            "answer": "Based on 04_learning_budget.txt, the annual learning budget for a full-time employee is INR 20,000 for approved courses, certifications, books, and conferences.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "04_learning_budget.txt",
+                    "score": 0.8563785552978516
+                },
+                {
+                    "source": "04_learning_budget.txt",
+                    "score": 0.5326521992683411
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 4,
+            "question": "How long are routine system logs retained?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Routine system logs are retained for 90 days.",
+            "answer": "Based on Source: 10_data_retention.txt, routine system logs are retained for 90 days.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "10_data_retention.txt",
+                    "score": 0.8994978666305542
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 5,
+            "question": "What is the standard replacement lifecycle for company laptops?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Standard company laptops are replaced on a four-year lifecycle unless the device is damaged beyond economical repair.",
+            "answer": "Standard company laptops are replaced on a four-year lifecycle unless the device is damaged beyond economical repair (Source: 08_equipment_policy.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "08_equipment_policy.txt",
+                    "score": 0.8699718713760376
+                },
+                {
+                    "source": "08_equipment_policy.txt",
+                    "score": 0.5516735911369324
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 6,
+            "question": "What is the domestic hotel reimbursement limit?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Hotel reimbursement is capped at INR 6,000 per night for domestic travel unless an exception is approved in advance.",
+            "answer": "Based on the provided policy evidence from `06_travel_policy.txt`, the hotel reimbursement limit for domestic travel is capped at INR 6,000 per night unless an exception is approved in advance.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "06_travel_policy.txt",
+                    "score": 0.7711776494979858
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 7,
+            "question": "How long must financial records be retained?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Financial records must be retained for 7 years.",
+            "answer": "Financial records must be retained for 7 years (Source: 10_data_retention.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "10_data_retention.txt",
+                    "score": 0.9152544736862183
+                },
+                {
+                    "source": "10_data_retention.txt",
+                    "score": 0.7179055213928223
+                },
+                {
+                    "source": "10_data_retention.txt",
+                    "score": 0.7009638547897339
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 8,
+            "question": "When are formal performance reviews conducted?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Formal performance reviews occur twice each year, in June and December.",
+            "answer": "Formal performance reviews occur twice each year, in June and December (Source: 07_performance_review.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "07_performance_review.txt",
+                    "score": 0.7407465577125549
+                },
+                {
+                    "source": "07_performance_review.txt",
+                    "score": 0.6729971766471863
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 9,
+            "question": "How much is the employee referral bonus?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "The referral bonus is INR 10,000 when an eligible referred candidate is hired and completes 90 calendar days of employment.",
+            "answer": "Based on 09_recruitment_referral.txt, the employee referral bonus is INR 10,000.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "09_recruitment_referral.txt",
+                    "score": 0.8026047945022583
+                },
+                {
+                    "source": "09_recruitment_referral.txt",
+                    "score": 0.7255276441574097
+                },
+                {
+                    "source": "09_recruitment_referral.txt",
+                    "score": 0.6656827926635742
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 10,
+            "question": "How many weeks of paid parental leave are provided under the standard benefit?",
+            "category": "ANSWERABLE",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "The standard parental leave benefit provides up to 12 weeks of paid leave for eligible employees.",
+            "answer": "Based on source 12_parental_benefits.txt, up to 12 weeks of paid leave are provided under the standard parental leave benefit for eligible employees.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "12_parental_benefits.txt",
+                    "score": 0.8907896280288696
+                },
+                {
+                    "source": "02_leave_policy.txt",
+                    "score": 0.6532392501831055
+                },
+                {
+                    "source": "12_parental_benefits.txt",
+                    "score": 0.6398207545280457
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 11,
+            "question": "What is the company's dental insurance coverage?",
+            "category": "UNANSWERABLE",
+            "expected_status": "NO_RELEVANT_SOURCES",
+            "expected_keywords": [],
+            "reference_answer": null,
+            "answer": "I could not find this information in the provided policies.",
+            "status": "NO_RELEVANT_SOURCES",
+            "confidence": "I don't know",
+            "score": 0.0,
+            "attempts": 0,
+            "sources": [],
+            "passed": true
+        },
+        {
+            "id": 12,
+            "question": "What is the company's employee stock trading policy?",
+            "category": "UNANSWERABLE",
+            "expected_status": "NO_RELEVANT_SOURCES",
+            "expected_keywords": [],
+            "reference_answer": null,
+            "answer": "I could not find this information in the provided policies.",
+            "status": "NO_RELEVANT_SOURCES",
+            "confidence": "I don't know",
+            "score": 0.0,
+            "attempts": 0,
+            "sources": [],
+            "passed": true
+        },
+        {
+            "id": 13,
+            "question": "What is the company's gym membership reimbursement policy?",
+            "category": "UNANSWERABLE",
+            "expected_status": "NO_RELEVANT_SOURCES",
+            "expected_keywords": [],
+            "reference_answer": null,
+            "answer": "I could not find this information in the provided policies.",
+            "status": "NO_RELEVANT_SOURCES",
+            "confidence": "I don't know",
+            "score": 0.0,
+            "attempts": 0,
+            "sources": [],
+            "passed": true
+        },
+        {
+            "id": 14,
+            "question": "What is the company's annual bonus percentage?",
+            "category": "UNANSWERABLE",
+            "expected_status": "NO_RELEVANT_SOURCES",
+            "expected_keywords": [],
+            "reference_answer": null,
+            "answer": "I could not find this information in the provided policies.",
+            "status": "NO_RELEVANT_SOURCES",
+            "confidence": "I don't know",
+            "score": 0.0,
+            "attempts": 0,
+            "sources": [],
+            "passed": true
+        },
+        {
+            "id": 15,
+            "question": "Who is the president of India?",
+            "category": "UNANSWERABLE",
+            "expected_status": "NO_RELEVANT_SOURCES",
+            "expected_keywords": [],
+            "reference_answer": null,
+            "answer": "I could not find this information in the provided policies.",
+            "status": "NO_RELEVANT_SOURCES",
+            "confidence": "I don't know",
+            "score": 0.0,
+            "attempts": 0,
+            "sources": [],
+            "passed": true
+        },
+        {
+            "id": 16,
+            "question": "Can every employee receive the INR 20,000 annual learning budget?",
+            "category": "PARTIALLY_SUPPORTED",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "The policy states that each full-time employee has the budget, while new employees become eligible after 30 calendar days of employment.",
+            "answer": "According to 04_learning_budget.txt, Each full-time employee has an annual learning budget of INR 20,000 for approved courses, certifications, books, and conferences.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "04_learning_budget.txt",
+                    "score": 0.7769362926483154
+                },
+                {
+                    "source": "04_learning_budget.txt",
+                    "score": 0.5783610939979553
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 17,
+            "question": "Can employees work remotely every day if they want to?",
+            "category": "PARTIALLY_SUPPORTED",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Employees may work remotely up to three days per week with manager approval. Fully remote arrangements require department-head and HR approval.",
+            "answer": "According to 01_remote_work_policy.txt, Employees may work remotely up to three days per week with manager approval.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.7551659345626831
+                },
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.6316001415252686
+                },
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.6243928670883179
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 18,
+            "question": "Can unused learning budget be carried over to the next year?",
+            "category": "PARTIALLY_SUPPORTED",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "No. Unused learning budget does not roll over to the next year and does not convert to cash.",
+            "answer": "No, unused learning budget does not roll over to the next year (Source: 04_learning_budget.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "04_learning_budget.txt",
+                    "score": 0.7536145448684692
+                },
+                {
+                    "source": "04_learning_budget.txt",
+                    "score": 0.5826479196548462
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 19,
+            "question": "Can an employee always carry forward five days of annual leave?",
+            "category": "PARTIALLY_SUPPORTED",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "Unused annual leave may be carried forward for up to 5 days into the next calendar year.",
+            "answer": "Based on the provided policy evidence, unused annual leave may be carried forward for up to 5 days into the next calendar year (Source: 02_leave_policy.txt).",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 0.93,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "02_leave_policy.txt",
+                    "score": 0.7708597183227539
+                },
+                {
+                    "source": "02_leave_policy.txt",
+                    "score": 0.6623323559761047
+                },
+                {
+                    "source": "02_leave_policy.txt",
+                    "score": 0.5924254655838013
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 20,
+            "question": "Does a positive performance review guarantee a salary increase?",
+            "category": "PARTIALLY_SUPPORTED",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "No. A review rating does not by itself guarantee a salary increase, promotion, or bonus.",
+            "answer": "Based on the provided policy evidence from 07_performance_review.txt, a review rating does not by itself guarantee a salary increase, promotion, or bonus.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "07_performance_review.txt",
+                    "score": 0.646012008190155
+                },
+                {
+                    "source": "07_performance_review.txt",
+                    "score": 0.6166744232177734
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 21,
+            "question": "The company allows employees to work remotely five days every week. Is this correct?",
+            "category": "TRAP",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "No. The policy permits up to three remote-work days per week with manager approval.",
+            "answer": "According to 01_remote_work_policy.txt, Employees may work remotely up to three days per week with manager approval.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.7248489856719971
+                },
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.5854835510253906
+                },
+                {
+                    "source": "01_remote_work_policy.txt",
+                    "score": 0.5799012184143066
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 22,
+            "question": "Standard company laptops are replaced every two years. Is this correct?",
+            "category": "TRAP",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "No. Standard company laptops are replaced on a four-year lifecycle unless damaged beyond economical repair.",
+            "answer": "No, this is not correct. According to 08_equipment_policy.txt, standard company laptops are replaced on a four-year lifecycle unless the device is damaged beyond economical repair.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "08_equipment_policy.txt",
+                    "score": 0.8413194417953491
+                },
+                {
+                    "source": "08_equipment_policy.txt",
+                    "score": 0.5412682294845581
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 23,
+            "question": "Routine system logs are retained permanently. Is this correct?",
+            "category": "TRAP",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "No. Routine system logs are retained for 90 days.",
+            "answer": "Based on the provided policy evidence (Source: 10_data_retention.txt), routine system logs are retained for 90 days, not permanently. Therefore, the statement is incorrect.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "10_data_retention.txt",
+                    "score": 0.8276416659355164
+                }
+            ],
+            "passed": true
+        },
+        {
+            "id": 24,
+            "question": "Employees can share their company credentials with coworkers when necessary. Is this allowed?",
+            "category": "TRAP",
+            "expected_status": "SUCCESS",
+            "expected_keywords": [],
+            "reference_answer": "No. Company credentials must never be shared with another person.",
+            "answer": "No, this is not allowed. According to the 05_security_policy.txt, company credentials must never be shared with another person.",
+            "status": "SUCCESS",
+            "confidence": "High confidence",
+            "score": 1.0,
+            "attempts": 1,
+            "sources": [
+                {
+                    "source": "05_security_policy.txt",
+                    "score": 0.6158928871154785
+                },
+                {
+                    "source": "05_security_policy.txt",
+                    "score": 0.5614915490150452
+                }
+            ],
+            "passed": true
+        }
+    ]
+}
