@@ -1,6 +1,4 @@
-﻿@'
-
-\# Self-Grading RAG Agent
+﻿# Self-Grading RAG Agent
 
 
 
@@ -755,6 +753,8 @@ Run:
 ```powershell
 
 Get-Content README.md
+
+
 
 
 
