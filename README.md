@@ -6,7 +6,7 @@ A production-style Retrieval-Augmented Generation (RAG) application that answers
 
 ## 🚀 Live Demo
 
-🔗 **Streamlit App:** PASTE_YOUR_LIVE_STREAMLIT_URL_HERE
+🔗 **Streamlit App:** https://self-grading-rag-agentgit-pwxgd5jgkdepjelnpzj5de.streamlit.app/
 
 ## 📌 Project Overview
 
@@ -343,8 +343,6 @@ Expand the automated evaluation dataset
 Shaik Khaja Mainuddin
 
 B.Tech — Artificial Intelligence & Data Science
-
-LIVE APP : https://self-grading-rag-agentgit-pwxgd5jgkdepjelnpzj5de.streamlit.app/
 
 GitHub:
 https://github.com/Mainuddin123
