@@ -46,8 +46,6 @@ Final Score + Confidence + Sources
       ↓
 Streamlit UI
 
-<img width="1206" height="1304" alt="ChatGPT Image Sep 18, 2026, 12_37_50 AM" src="https://github.com/user-attachments/assets/4db95104-692a-4e62-ba6f-9afb84311cbd" />
-
 ## 🧠 Key Features
 
 ### 1. Evidence-Grounded RAG
