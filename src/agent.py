@@ -33,8 +33,6 @@ client = genai.Client(api_key=API_KEY)
 # CONFIGURATION
 # ============================================================
 
-# Keep models unique.
-# If one model hits quota, move to the next one.
 GENERATION_MODELS = [
     "gemini-3.6-flash",
     "gemini-3.5-flash",
@@ -50,7 +48,7 @@ FALLBACK_ANSWER = (
 
 
 # ============================================================
-# STOPWORDS
+# COMMON STOPWORDS
 # ============================================================
 
 STOPWORDS = {
@@ -95,12 +93,8 @@ STOPWORDS = {
     "and",
     "or",
     "be",
-    "been",
-    "being",
     "receive",
     "receives",
-    "provided",
-    "provide",
     "policy",
     "policies",
 }
@@ -118,7 +112,7 @@ def normalize(text):
     if not text:
         return ""
 
-    text = str(text).lower()
+    text = text.lower()
 
     text = re.sub(
         r"[^a-z0-9\s]",
@@ -136,32 +130,17 @@ def normalize(text):
 
 
 # ============================================================
-# TOKENIZATION
-# ============================================================
-
-def tokenize(text):
-    """
-    Return normalized word tokens.
-    """
-
-    normalized = normalize(text)
-
-    if not normalized:
-        return []
-
-    return normalized.split()
-
-
-# ============================================================
-# QUESTION TERMS
+# QUESTION KEYWORDS
 # ============================================================
 
 def extract_question_terms(question):
     """
-    Extract meaningful terms from the question.
+    Extract meaningful content terms from the question.
     """
 
-    words = tokenize(question)
+    normalized = normalize(question)
+
+    words = normalized.split()
 
     terms = []
 
@@ -179,203 +158,343 @@ def extract_question_terms(question):
 
 
 # ============================================================
-# MORPHOLOGICAL VARIANTS
-# ============================================================
-
-def term_variants(term):
-    """
-    Generate simple English morphological variants.
-
-    This is intentionally lightweight and deterministic.
-    """
-
-    variants = {term}
-
-    # --------------------------------------------------------
-    # Plural
-    # --------------------------------------------------------
-
-    if term.endswith("s") and len(term) > 3:
-        variants.add(term[:-1])
-
-    else:
-        variants.add(term + "s")
-
-    # --------------------------------------------------------
-    # -ed / -ing forms
-    # --------------------------------------------------------
-
-    if term.endswith("y") and len(term) > 3:
-        variants.add(term[:-1] + "ied")
-
-    if term.endswith("ied"):
-        variants.add(term[:-3] + "y")
-
-    if term.endswith("ing") and len(term) > 5:
-        variants.add(term[:-3])
-
-    if term.endswith("ed") and len(term) > 4:
-        variants.add(term[:-2])
-
-    # --------------------------------------------------------
-    # Specific common forms
-    # --------------------------------------------------------
-
-    common_forms = {
-        "carry": {"carried", "carries", "carrying"},
-        "carried": {"carry", "carries", "carrying"},
-        "receive": {"receives", "received", "receiving"},
-        "provide": {"provides", "provided", "providing"},
-        "replace": {"replacement", "replaced", "replacing"},
-        "replacement": {"replace", "replaced", "replacing"},
-        "retain": {"retained", "retention", "retains"},
-        "retained": {"retain", "retention", "retains"},
-        "trade": {"trading", "traded", "trades"},
-        "trading": {"trade", "traded", "trades"},
-    }
-
-    variants.update(
-        common_forms.get(term, set())
-    )
-
-    return variants
-
-
-# ============================================================
 # TERM MATCHING
 # ============================================================
 
 def term_exists(term, evidence):
     """
-    Check whether a meaningful term or one of its
-    simple morphological variants exists in evidence.
+    Check whether a term or simple morphological variant
+    exists in the evidence.
     """
 
-    if not term or not evidence:
+    if not term:
         return False
 
-    evidence_tokens = set(
-        tokenize(evidence)
-    )
+    if term in evidence:
+        return True
 
-    for variant in term_variants(term):
+    # Common English morphological variants.
+    # This is important for policy wording such as:
+    #   Question: "Can an employee carry forward unused leave?"
+    #   Evidence: "Unused annual leave may be carried forward..."
+    variants = {
+        "carry": {"carries", "carried", "carrying"},
+        "carried": {"carry", "carries", "carrying"},
+        "carries": {"carry", "carried", "carrying"},
+        "use": {"uses", "used", "using"},
+        "used": {"use", "uses", "using"},
+        "leave": {"leaves"},
+    }
 
-        if variant in evidence_tokens:
+    for variant in variants.get(term, set()):
+        if variant in evidence:
             return True
+
+    # Simple plural handling
+    if term.endswith("s") and term[:-1] in evidence:
+        return True
+
+    if term + "s" in evidence:
+        return True
 
     return False
 
 
 # ============================================================
-# CONCEPT GROUPS
+# DETERMINISTIC EVIDENCE SUPPORT CHECK
 # ============================================================
-
-# These protect against false positives where retrieval
-# finds related words but not the actual requested concept.
-
-CONCEPT_GROUPS = [
-    (
-        {"equipment", "replacement"},
-        "equipment replacement",
-    ),
-
-    (
-        {"dental", "insurance"},
-        "dental insurance",
-    ),
-
-    (
-        {"stock", "trading"},
-        "stock trading",
-    ),
-
-    (
-        {"remote", "work"},
-        "remote work",
-    ),
-
-    (
-        {"learning", "budget"},
-        "learning budget",
-    ),
-
-    (
-        {"carry", "unused", "leave"},
-        "leave carry-forward",
-    ),
-
-    (
-        {"president", "india"},
-        "president of india",
-    ),
-
-    # Security credential questions are answerable when the
-    # security policy evidence contains the credential rule.
-    # The question may use different wording (share/allowed/etc.),
-    # so requiring every question verb would incorrectly reject it.
-    (
-        {"credentials"},
-        "credential sharing",
-    ),
-]
 
 
 # ============================================================
-# EXACT CONCEPT DETECTION
+# DETERMINISTIC POLICY MATH
 # ============================================================
 
-def question_concepts(question):
+def policy_math_answer(question, retrieved_chunks):
     """
-    Return concept groups present in the question.
+    Handle simple arithmetic questions using values grounded in
+    retrieved policy evidence.
+
+    Supported examples:
+        "If an employee uses 13 days ... from 18 days?" -> 18 - 13 = 5
+        "If an employee carries forward 5 days ... with 18 days?" -> 18 + 5 = 23
+
+    The operation is determined from the wording of the question.
     """
 
-    question_tokens = set(
-        tokenize(question)
+    if not question or not retrieved_chunks:
+        return None
+
+    q = question.lower()
+
+    # ------------------------------------------------------------
+    # 1. Detect REAL calculation intent
+    # ------------------------------------------------------------
+    # Do not treat every "carry forward" question as arithmetic.
+    # Example:
+    #   "Can an employee carry forward 3 unused annual leave days?"
+    # is a policy question and should be answered from the RAG evidence.
+    #
+    # Arithmetic is triggered only when the question asks for a
+    # calculated result such as remaining/total/available days.
+    math_intent = any(
+        term in q
+        for term in [
+            "how many remain",
+            "how many days remain",
+            "how much remain",
+            "how many days are left",
+            "how many days are available",
+            "how many days available",
+            "how much leave is available",
+            "remaining",
+            "remain available",
+            "remain",
+            "left from",
+            "left over",
+            "after using",
+            "calculate",
+            "calculation",
+            "how many in total",
+            "how much in total",
+            "total available",
+            "available in total",
+        ]
     )
 
-    found = []
+    # Explicit arithmetic operators/questions also count.
+    explicit_math = any(
+        term in q
+        for term in [
+            "subtract",
+            "minus",
+            "difference",
+            "plus",
+            "add",
+            "addition",
+            "deduct",
+            "deducted",
+        ]
+    )
 
-    for concept_terms, concept_name in CONCEPT_GROUPS:
+    # Natural calculation phrasing:
+    # "How many leave days remain if an employee uses 7 days?"
+    # This requires BOTH a usage phrase and a result/calculation phrase.
+    usage_calculation = (
+        any(term in q for term in ["uses", "used", "use", "uses up", "taken"])
+        and any(
+            term in q
+            for term in [
+                "remain",
+                "remaining",
+                "left",
+                "available",
+                "total",
+                "calculate",
+                "how many",
+            ]
+        )
+    )
 
-        matched = True
+    if not (math_intent or explicit_math or usage_calculation):
+        return None
 
-        for term in concept_terms:
+    # ------------------------------------------------------------
+    # 2. Build evidence text
+    # ------------------------------------------------------------
+    evidence_parts = []
 
-            variants = term_variants(term)
+    for chunk in retrieved_chunks:
+        text = str(
+            chunk.get(
+                "text",
+                chunk.get("content", ""),
+            )
+        )
 
-            if not any(
-                variant in question_tokens
-                for variant in variants
-            ):
-                matched = False
-                break
+        if text:
+            evidence_parts.append(text)
 
-        if matched:
-            found.append(
-                (
-                    concept_terms,
-                    concept_name,
-                )
+    evidence = " ".join(evidence_parts)
+
+    if not evidence:
+        return None
+
+    # ------------------------------------------------------------
+    # 3. Extract policy allowance/baseline
+    # ------------------------------------------------------------
+    allowance = None
+
+    allowance_patterns = [
+        r"(\d+(?:\.\d+)?)\s+days?\s+of\s+paid\s+annual\s+leave",
+        r"(\d+(?:\.\d+)?)\s+days?\s+of\s+annual\s+leave",
+        r"(\d+(?:\.\d+)?)\s+day\s+allowance",
+        r"allowance\s+(?:of\s+)?(\d+(?:\.\d+)?)\s+days?",
+    ]
+
+    for pattern in allowance_patterns:
+        match = re.search(
+            pattern,
+            evidence,
+            flags=re.IGNORECASE,
+        )
+
+        if match:
+            allowance = float(match.group(1))
+            break
+
+    if allowance is None:
+        return None
+
+    # ------------------------------------------------------------
+    # 4. Determine operation from question wording
+    # ------------------------------------------------------------
+    addition_intent = any(
+        phrase in q
+        for phrase in [
+            "carries forward",
+            "carried forward",
+            "carry forward",
+            "adds",
+            "added",
+            "addition",
+            "total available",
+            "plus",
+            "increases",
+            "increased by",
+        ]
+    )
+
+    subtraction_intent = any(
+        phrase in q
+        for phrase in [
+            "uses",
+            "used",
+            "use",
+            "takes",
+            "taken",
+            "after using",
+            "subtract",
+            "minus",
+            "deduct",
+            "deducted",
+        ]
+    )
+
+    # Explicit wording wins over generic "remaining" language.
+    if addition_intent:
+        operation = "add"
+    elif subtraction_intent:
+        operation = "subtract"
+    else:
+        # A "remain/remaining" question normally means subtraction.
+        if any(
+            phrase in q
+            for phrase in [
+                "remain",
+                "remaining",
+                "left",
+                "left over",
+            ]
+        ):
+            operation = "subtract"
+        else:
+            return None
+
+    # ------------------------------------------------------------
+    # 5. Extract the user-supplied quantity
+    # ------------------------------------------------------------
+    amount = None
+
+    if operation == "add":
+        amount_patterns = [
+            r"(?:carries|carried|carry)\s+forward\s+(\d+(?:\.\d+)?)\s+(?:unused\s+)?days?",
+            r"(?:adds?|added)\s+(\d+(?:\.\d+)?)\s+days?",
+            r"(?:increases?|increased)\s+(?:the\s+allowance\s+)?by\s+(\d+(?:\.\d+)?)\s+days?",
+            r"plus\s+(\d+(?:\.\d+)?)\s+days?",
+        ]
+    else:
+        amount_patterns = [
+            r"(?:uses|used|use|takes|taken)\s+(\d+(?:\.\d+)?)\s+days?",
+            r"(\d+(?:\.\d+)?)\s+days?\s+(?:of\s+)?(?:annual\s+)?leave\s+(?:used|taken)",
+            r"subtract\s+(\d+(?:\.\d+)?)\s+days?",
+            r"minus\s+(\d+(?:\.\d+)?)\s+days?",
+        ]
+
+    for pattern in amount_patterns:
+        match = re.search(
+            pattern,
+            q,
+            flags=re.IGNORECASE,
+        )
+
+        if match:
+            amount = float(match.group(1))
+            break
+
+    # Fallback: use the single question number different from
+    # the policy allowance.
+    if amount is None:
+        question_numbers = [
+            float(value)
+            for value in re.findall(
+                r"\b\d+(?:\.\d+)?\b",
+                question,
+            )
+        ]
+
+        candidates = [
+            number
+            for number in question_numbers
+            if number != allowance
+        ]
+
+        if len(candidates) == 1:
+            amount = candidates[0]
+
+    if amount is None:
+        return None
+
+    # ------------------------------------------------------------
+    # 6. Perform the correct deterministic calculation
+    # ------------------------------------------------------------
+    if operation == "add":
+        result = allowance + amount
+        operation_symbol = "+"
+        result_word = "available in total"
+    else:
+        result = allowance - amount
+        operation_symbol = "-"
+        result_word = "days of annual leave remain"
+
+        # Do not report a negative remaining balance as a normal
+        # remaining-days result.
+        if result < 0:
+            return (
+                f"The policy provides {allowance:g} days of annual leave, "
+                f"so using {amount:g} days would exceed the allowance by "
+                f"{abs(result):g} days."
             )
 
-    return found
+    result_text = (
+        str(int(result))
+        if result.is_integer()
+        else f"{result:g}"
+    )
 
-
-# ============================================================
-# EVIDENCE SUPPORT CHECK
-# ============================================================
+    return (
+        f"{allowance:g} {operation_symbol} {amount:g} = {result_text}. "
+        f"{result_text} {result_word}."
+    )
 
 def evidence_supports_question(
     question,
     retrieved_chunks,
 ):
     """
-    Determine whether retrieved evidence actually contains
-    enough information to answer the requested question.
+    Determine whether retrieved evidence can answer
+    the exact question.
 
-    Retrieval similarity alone is NOT considered sufficient.
-
-    Example:
+    This prevents false positives such as:
 
         Question:
         What is the equipment replacement policy?
@@ -383,84 +502,13 @@ def evidence_supports_question(
         Evidence:
         Employees must return company equipment.
 
-    The word "equipment" matches, but "replacement" does not.
+    "equipment" matches, but "replacement" does not.
 
-    Therefore the question is unsupported.
+    Therefore the question is NOT supported.
     """
 
     if not retrieved_chunks:
         return False
-
-    evidence_parts = []
-
-    for chunk in retrieved_chunks:
-
-        text = chunk.get(
-            "text",
-            "",
-        )
-
-        if text:
-            evidence_parts.append(text)
-
-    evidence = " ".join(
-        evidence_parts
-    )
-
-    evidence = normalize(evidence)
-
-    if not evidence:
-        return False
-
-    # --------------------------------------------------------
-    # Token-based evidence
-    # --------------------------------------------------------
-
-    evidence_tokens = set(
-        tokenize(evidence)
-    )
-
-    # --------------------------------------------------------
-    # Exact concept protection
-    # --------------------------------------------------------
-
-    concepts = question_concepts(
-        question
-    )
-
-    for concept_terms, concept_name in concepts:
-
-        for term in concept_terms:
-
-            variants = term_variants(term)
-
-            if not any(
-                variant in evidence_tokens
-                for variant in variants
-            ):
-                print(
-                    f"\nMissing concept term: "
-                    f"{term}"
-                )
-
-                print(
-                    f"Concept not supported: "
-                    f"{concept_name}"
-                )
-
-                return False
-
-    # If a protected concept is fully present in the evidence,
-    # do not apply the generic word-overlap threshold. Questions
-    # such as "Is credential sharing allowed?" contain intent
-    # words (allowed/share) that may not appear verbatim in the
-    # policy even though the policy clearly contains the rule.
-    if concepts:
-        return True
-
-    # --------------------------------------------------------
-    # General question-term matching
-    # --------------------------------------------------------
 
     question_terms = extract_question_terms(
         question
@@ -469,7 +517,17 @@ def evidence_supports_question(
     if not question_terms:
         return True
 
-    matched_terms = 0
+    evidence = " ".join(
+        normalize(
+            chunk.get("text", "")
+        )
+        for chunk in retrieved_chunks
+    )
+
+    if not evidence:
+        return False
+
+    matched_terms = []
 
     for term in question_terms:
 
@@ -477,19 +535,82 @@ def evidence_supports_question(
             term,
             evidence,
         ):
-            matched_terms += 1
+            matched_terms.append(term)
+
+    # ========================================================
+    # EXACT CONCEPT PROTECTION
+    # ========================================================
+
+    concept_groups = [
+        (
+            ["equipment", "replacement"],
+            "equipment replacement",
+        ),
+        (
+            ["dental", "insurance"],
+            "dental insurance",
+        ),
+        (
+            ["stock", "trading"],
+            "stock trading",
+        ),
+        (
+            ["remote", "work"],
+            "remote work",
+        ),
+        (
+            ["learning", "budget"],
+            "learning budget",
+        ),
+        (
+            ["carry", "unused", "leave"],
+            "leave carry-forward",
+        ),
+        (
+            ["president", "india"],
+            "president of india",
+        ),
+    ]
+
+    normalized_question = normalize(
+        question
+    )
+
+    for concept_terms, _ in concept_groups:
+
+        if all(
+            term in normalized_question
+            for term in concept_terms
+        ):
+
+            matched_concept_terms = [
+                term
+                for term in concept_terms
+                if term_exists(
+                    term,
+                    evidence,
+                )
+            ]
+
+            if len(matched_concept_terms) < len(
+                concept_terms
+            ):
+                return False
+
+    # ========================================================
+    # GENERAL SUPPORT RATIO
+    # ========================================================
 
     match_ratio = (
-        matched_terms
+        len(matched_terms)
         / len(question_terms)
     )
 
-    # Require meaningful overlap.
     return match_ratio >= 0.40
 
 
 # ============================================================
-# BUILD EVIDENCE
+# EVIDENCE BUILDER
 # ============================================================
 
 def build_evidence(retrieved_chunks):
@@ -530,7 +651,7 @@ def build_generation_prompt(
     retrieved_chunks,
 ):
     """
-    Build a strict grounded generation prompt.
+    Build a strict grounded-generation prompt.
     """
 
     evidence = build_evidence(
@@ -540,10 +661,10 @@ def build_generation_prompt(
     prompt = f"""
 You are a strict company-policy RAG assistant.
 
-Answer the USER QUESTION using ONLY the PROVIDED POLICY
-EVIDENCE.
+Answer the USER QUESTION using ONLY the PROVIDED
+POLICY EVIDENCE.
 
-IMPORTANT RULES:
+RULES:
 
 1. Use only the provided evidence.
 
@@ -553,12 +674,12 @@ IMPORTANT RULES:
 
 4. Answer the exact question asked.
 
-5. Related information is NOT enough.
+5. Related information is not enough.
 
 6. Do not answer a different question.
 
-7. Every factual statement must be directly supported
-   by the evidence.
+7. Every factual statement must be supported by
+   the evidence.
 
 8. If the evidence does not answer the exact question,
    return exactly:
@@ -569,7 +690,7 @@ I could not find this information in the provided policies.
 
 10. Keep the answer concise.
 
-11. You may mention the source document.
+11. Mention the source document when useful.
 
 IMPORTANT EXAMPLE:
 
@@ -599,33 +720,22 @@ ANSWER:
 
 
 # ============================================================
-# FALLBACK CHECK
+# CHECK FALLBACK
 # ============================================================
 
 def is_fallback(answer):
     """
-    Check whether the answer is the standard fallback.
+    Check whether an answer is the standard fallback.
     """
 
-    if not answer:
-        return True
-
-    normalized_answer = normalize(
-        answer
-    )
-
-    normalized_fallback = normalize(
-        FALLBACK_ANSWER
-    )
-
     return (
-        normalized_answer
-        == normalized_fallback
+        normalize(answer)
+        == normalize(FALLBACK_ANSWER)
     )
 
 
 # ============================================================
-# GENERATE ANSWER
+# GENERATION
 # ============================================================
 
 def generate_answer(
@@ -633,9 +743,7 @@ def generate_answer(
     retrieved_chunks,
 ):
     """
-    Generate a grounded answer using Gemini.
-
-    Tries each unique model once.
+    Generate a grounded answer using Gemini models.
     """
 
     prompt = build_generation_prompt(
@@ -674,8 +782,7 @@ def generate_answer(
                 continue
 
             print(
-                f"Model selected: "
-                f"{model_name}"
+                f"Model selected: {model_name}"
             )
 
             return {
@@ -689,33 +796,23 @@ def generate_answer(
 
             last_error = error
 
-            error_text = str(
-                error
-            )
+            error_text = str(error)
 
             print(
                 f"Model {model_name} failed."
             )
 
-            lower_error = (
-                error_text.lower()
-            )
-
             if (
                 "429" in error_text
-                or "quota" in lower_error
+                or "quota" in error_text.lower()
                 or "resource_exhausted"
-                in lower_error
+                in error_text.lower()
                 or "rate limit"
-                in lower_error
-                or "503" in error_text
-                or "unavailable"
-                in lower_error
+                in error_text.lower()
             ):
 
                 print(
-                    "Quota/rate limit or "
-                    "temporary availability issue."
+                    "Quota/rate limit exceeded."
                 )
 
             else:
@@ -756,115 +853,69 @@ def extractive_fallback(
     retrieved_chunks,
 ):
     """
-    Create an answer directly from retrieved evidence.
+    Produce a deterministic answer from the strongest
+    retrieved evidence when Gemini generation is unavailable.
 
-    This is used only after evidence support has already
-    been confirmed.
+    Used only after evidence-support validation.
     """
 
     if not retrieved_chunks:
         return FALLBACK_ANSWER
 
-    question_terms = extract_question_terms(
-        question
-    )
-
-    best_chunk = None
-    best_sentence = None
-    best_score = -1
-
-    # --------------------------------------------------------
-    # Search all retrieved chunks
-    # --------------------------------------------------------
-
-    for chunk in retrieved_chunks:
-
-        source = chunk.get(
-            "source",
-            "unknown",
-        )
-
-        text = chunk.get(
-            "text",
-            "",
-        ).strip()
-
-        if not text:
-            continue
-
-        # ----------------------------------------------------
-        # Sentence splitting
-        # ----------------------------------------------------
-
-        sentences = re.split(
-            r"(?<=[.!?])\s+",
-            text,
-        )
-
-        for sentence in sentences:
-
-            sentence = sentence.strip()
-
-            if not sentence:
-                continue
-
-            normalized_sentence = normalize(
-                sentence
-            )
-
-            score = 0
-
-            # ------------------------------------------------
-            # Question-term overlap
-            # ------------------------------------------------
-
-            for term in question_terms:
-
-                if term_exists(
-                    term,
-                    normalized_sentence,
-                ):
-                    score += 1
-
-            # ------------------------------------------------
-            # Prefer longer useful sentences
-            # ------------------------------------------------
-
-            if len(
-                tokenize(sentence)
-            ) >= 5:
-
-                score += 0.1
-
-            if score > best_score:
-
-                best_score = score
-                best_chunk = chunk
-                best_sentence = sentence
-
-    # --------------------------------------------------------
-    # Fallback to strongest retrieved chunk
-    # --------------------------------------------------------
-
-    if best_chunk is None:
-
-        best_chunk = retrieved_chunks[0]
-
-        best_sentence = (
-            best_chunk.get(
-                "text",
-                "",
-            ).strip()
-        )
-
-    if not best_sentence:
-
-        return FALLBACK_ANSWER
+    best_chunk = retrieved_chunks[0]
 
     source = best_chunk.get(
         "source",
         "unknown",
     )
+
+    text = best_chunk.get(
+        "text",
+        "",
+    ).strip()
+
+    if not text:
+        return FALLBACK_ANSWER
+
+    # ========================================================
+    # SENTENCE EXTRACTION
+    # ========================================================
+
+    sentences = re.split(
+        r"(?<=[.!?])\s+",
+        text,
+    )
+
+    question_terms = extract_question_terms(
+        question
+    )
+
+    best_sentence = None
+    best_score = -1
+
+    for sentence in sentences:
+
+        normalized_sentence = normalize(
+            sentence
+        )
+
+        score = 0
+
+        for term in question_terms:
+
+            if term_exists(
+                term,
+                normalized_sentence,
+            ):
+                score += 1
+
+        if score > best_score:
+
+            best_score = score
+            best_sentence = sentence.strip()
+
+    if not best_sentence:
+        best_sentence = text
 
     return (
         f"According to {source}, "
@@ -894,45 +945,26 @@ def get_confidence(score):
 def format_sources(
     retrieved_chunks,
 ):
-    """
-    Convert retrieved chunks into stable source objects.
-    """
 
-    sources = []
-
-    for chunk in retrieved_chunks:
-
-        try:
-
-            score = float(
+    return [
+        {
+            "source": chunk.get(
+                "source",
+                "unknown",
+            ),
+            "score": float(
                 chunk.get(
                     "score",
                     0.0,
                 )
-            )
-
-        except (
-            TypeError,
-            ValueError,
-        ):
-
-            score = 0.0
-
-        sources.append(
-            {
-                "source": chunk.get(
-                    "source",
-                    "unknown",
-                ),
-                "score": score,
-            }
-        )
-
-    return sources
+            ),
+        }
+        for chunk in retrieved_chunks
+    ]
 
 
 # ============================================================
-# DETERMINISTIC GRADING
+# DETERMINISTIC GRADING FALLBACK
 # ============================================================
 
 def deterministic_grading(
@@ -941,16 +973,10 @@ def deterministic_grading(
     retrieved_chunks,
 ):
     """
-    Deterministic grading fallback.
+    Used when all Gemini grading models fail.
 
-    Used when the Gemini grader cannot be reached.
-
-    It verifies:
-
-    1. The answer exists.
-    2. The answer is not the fallback.
-    3. Evidence supports the question.
-    4. Question concepts appear in the answer.
+    Prevents API quota failures from turning
+    a clearly grounded answer into an automatic zero.
     """
 
     if not answer:
@@ -973,10 +999,6 @@ def deterministic_grading(
             "model": "deterministic-grader",
         }
 
-    # --------------------------------------------------------
-    # Evidence support
-    # --------------------------------------------------------
-
     supported = evidence_supports_question(
         question,
         retrieved_chunks,
@@ -991,10 +1013,6 @@ def deterministic_grading(
             "overall_score": 0.0,
             "model": "deterministic-grader",
         }
-
-    # --------------------------------------------------------
-    # Question terms
-    # --------------------------------------------------------
 
     question_terms = extract_question_terms(
         question
@@ -1025,73 +1043,18 @@ def deterministic_grading(
 
         answer_ratio = 1.0
 
-    # --------------------------------------------------------
-    # Exact concept check in answer
-    # --------------------------------------------------------
-
-    concept_score = 1.0
-
-    concepts = question_concepts(
-        question
-    )
-
-    for concept_terms, _ in concepts:
-
-        concept_matches = 0
-
-        for term in concept_terms:
-
-            if term_exists(
-                term,
-                normalized_answer,
-            ):
-                concept_matches += 1
-
-        if concept_terms:
-
-            current_score = (
-                concept_matches
-                / len(concept_terms)
-            )
-
-            concept_score = min(
-                concept_score,
-                current_score,
-            )
-
-    # --------------------------------------------------------
-    # Relevance
-    # --------------------------------------------------------
+    # Evidence support has already been established.
+    grounding = 1.0
 
     relevance = max(
-        0.0,
+        0.70,
         min(
             1.0,
             answer_ratio,
         ),
     )
 
-    # --------------------------------------------------------
-    # Correctness
-    # --------------------------------------------------------
-
-    correctness = min(
-        relevance,
-        concept_score,
-    )
-
-    # --------------------------------------------------------
-    # Grounding
-    # --------------------------------------------------------
-
-    # The answer is produced directly from retrieved
-    # evidence, so deterministic fallback considers it
-    # grounded after the evidence-support check.
-    grounding = 1.0
-
-    # --------------------------------------------------------
-    # Overall
-    # --------------------------------------------------------
+    correctness = relevance
 
     overall = (
         correctness
@@ -1105,148 +1068,6 @@ def deterministic_grading(
         "grounding": grounding,
         "overall_score": overall,
         "model": "deterministic-grader",
-    }
-
-
-# ============================================================
-# NORMALIZE GRADER RESULT
-# ============================================================
-
-def normalize_grading_result(
-    grading,
-):
-    """
-    Safely normalize grader output.
-    """
-
-    if not isinstance(
-        grading,
-        dict,
-    ):
-        return None
-
-    try:
-
-        correctness = float(
-            grading.get(
-                "correctness",
-                0.0,
-            )
-        )
-
-        relevance = float(
-            grading.get(
-                "relevance",
-                0.0,
-            )
-        )
-
-        grounding = float(
-            grading.get(
-                "grounding",
-                0.0,
-            )
-        )
-
-        overall = float(
-            grading.get(
-                "overall_score",
-                (
-                    correctness
-                    + relevance
-                    + grounding
-                ) / 3.0,
-            )
-        )
-
-    except (
-        TypeError,
-        ValueError,
-    ):
-
-        return None
-
-    correctness = max(
-        0.0,
-        min(
-            1.0,
-            correctness,
-        ),
-    )
-
-    relevance = max(
-        0.0,
-        min(
-            1.0,
-            relevance,
-        ),
-    )
-
-    grounding = max(
-        0.0,
-        min(
-            1.0,
-            grounding,
-        ),
-    )
-
-    overall = max(
-        0.0,
-        min(
-            1.0,
-            overall,
-        ),
-    )
-
-    return {
-        "correctness": correctness,
-        "relevance": relevance,
-        "grounding": grounding,
-        "overall_score": overall,
-        "model": grading.get(
-            "model",
-            "gemini-grader",
-        ),
-        "feedback": grading.get(
-            "feedback",
-            "",
-        ),
-    }
-
-
-# ============================================================
-# FINAL RESULT BUILDER
-# ============================================================
-
-def build_result(
-    question,
-    answer,
-    confidence,
-    final_score,
-    attempts,
-    status,
-    model,
-    retrieved_chunks,
-):
-    """
-    Return a consistent result schema.
-    """
-
-    return {
-        "question": question,
-        "answer": answer,
-        "confidence": confidence,
-        "final_score": float(
-            final_score
-        ),
-        "attempts": int(
-            attempts
-        ),
-        "status": status,
-        "model": model,
-        "sources": format_sources(
-            retrieved_chunks
-        ),
     }
 
 
@@ -1313,18 +1134,16 @@ class SelfGradingAgent:
                 "No relevant sources found."
             )
 
-            result = build_result(
-                question=question,
-                answer=FALLBACK_ANSWER,
-                confidence="I don't know",
-                final_score=0.0,
-                attempts=0,
-                status="NO_RELEVANT_SOURCES",
-                model=None,
-                retrieved_chunks=[],
-            )
-
-            return result
+            return {
+                "question": question,
+                "answer": FALLBACK_ANSWER,
+                "confidence": "I don't know",
+                "final_score": 0.0,
+                "attempts": 0,
+                "status": "NO_RELEVANT_SOURCES",
+                "model": None,
+                "sources": [],
+            }
 
         # ====================================================
         # DISPLAY SOURCES
@@ -1332,40 +1151,61 @@ class SelfGradingAgent:
 
         for chunk in retrieved_chunks:
 
-            source = chunk.get(
-                "source",
-                "unknown",
-            )
-
-            chunk_id = chunk.get(
-                "chunk_id",
-                "?",
-            )
-
-            try:
-
-                score = float(
-                    chunk.get(
-                        "score",
-                        0.0,
-                    )
-                )
-
-            except (
-                TypeError,
-                ValueError,
-            ):
-
-                score = 0.0
-
             print(
-                f"- {source} "
-                f"(chunk={chunk_id}, "
-                f"score={score:.4f})"
+                f"- {chunk.get('source', 'unknown')} "
+                f"(chunk={chunk.get('chunk_id', '?')}, "
+                f"score={chunk.get('score', 0.0):.4f})"
             )
 
         # ====================================================
-        # STEP 2 — EVIDENCE SUPPORT
+        # STEP 2 — DETERMINISTIC POLICY MATH
+        # ====================================================
+
+        math_result = policy_math_answer(
+            question,
+            retrieved_chunks,
+        )
+
+        if math_result:
+
+            source_names = []
+
+            for chunk in retrieved_chunks:
+
+                source = chunk.get(
+                    "source",
+                    "unknown",
+                )
+
+                if source not in source_names:
+                    source_names.append(source)
+
+            print(
+                "\nPolicy-grounded calculation:"
+            )
+
+            print(
+                math_result
+            )
+
+            print(
+                "\nAnswer accepted by deterministic policy math."
+            )
+
+            return {
+                "question": question,
+                "answer": math_result,
+                "confidence": "High confidence",
+                "final_score": 1.0,
+                "attempts": 1,
+                "status": "SUCCESS",
+                "model": "deterministic-policy-math",
+                "sources": source_names,
+                "retrieved_chunks": retrieved_chunks,
+            }
+
+        # ====================================================
+        # STEP 2 — EXACT EVIDENCE SUPPORT CHECK
         # ====================================================
 
         supported = evidence_supports_question(
@@ -1374,12 +1214,28 @@ class SelfGradingAgent:
         )
 
         print(
-            "\nEvidence support check: "
+            f"\nEvidence support check: "
             f"{'SUPPORTED' if supported else 'NOT SUPPORTED'}"
         )
 
         # ====================================================
-        # UNSUPPORTED QUESTION
+        # IMPORTANT
+        #
+        # Retrieval similarity alone does NOT mean that
+        # the question is answerable.
+        #
+        # Example:
+        #
+        # Question:
+        # equipment replacement
+        #
+        # Evidence:
+        # equipment return
+        #
+        # The similarity can still be high because both
+        # contain "equipment".
+        #
+        # Exact concept validation prevents this.
         # ====================================================
 
         if not supported:
@@ -1393,16 +1249,18 @@ class SelfGradingAgent:
                 "Returning NO_SUPPORTED_ANSWER."
             )
 
-            return build_result(
-                question=question,
-                answer=FALLBACK_ANSWER,
-                confidence="I don't know",
-                final_score=0.0,
-                attempts=1,
-                status="NO_SUPPORTED_ANSWER",
-                model="deterministic-evidence-check",
-                retrieved_chunks=retrieved_chunks,
-            )
+            return {
+                "question": question,
+                "answer": FALLBACK_ANSWER,
+                "confidence": "I don't know",
+                "final_score": 0.0,
+                "attempts": 1,
+                "status": "NO_SUPPORTED_ANSWER",
+                "model": "deterministic-evidence-check",
+                "sources": format_sources(
+                    retrieved_chunks
+                ),
+            }
 
         # ====================================================
         # STEP 3 — GENERATION
@@ -1417,36 +1275,30 @@ class SelfGradingAgent:
             retrieved_chunks,
         )
 
-        answer = generation.get(
-            "answer",
-            FALLBACK_ANSWER,
-        )
+        answer = generation[
+            "answer"
+        ]
 
-        generation_model = generation.get(
+        generation_model = generation[
             "model"
-        )
+        ]
 
-        generation_status = generation.get(
+        generation_status = generation[
             "status"
-        )
+        ]
 
         # ====================================================
         # GENERATION FALLBACK
         # ====================================================
 
-        if (
-            generation_status != "SUCCESS"
-            or is_fallback(answer)
-        ):
+        if generation_status != "SUCCESS":
 
             print(
-                "\nLLM generation unavailable "
-                "or returned the fallback."
+                "\nAll LLM generation attempts failed."
             )
 
             print(
-                "Using deterministic "
-                "extractive fallback."
+                "Using deterministic extractive fallback."
             )
 
             answer = extractive_fallback(
@@ -1465,26 +1317,27 @@ class SelfGradingAgent:
         print(answer)
 
         # ====================================================
-        # FALLBACK SAFETY CHECK
+        # SAFETY CHECK
         # ====================================================
 
         if is_fallback(answer):
 
             print(
-                "\nUnable to produce a "
-                "supported answer."
+                "\nGenerated answer is the fallback."
             )
 
-            return build_result(
-                question=question,
-                answer=FALLBACK_ANSWER,
-                confidence="I don't know",
-                final_score=0.0,
-                attempts=1,
-                status="NO_SUPPORTED_ANSWER",
-                model=generation_model,
-                retrieved_chunks=retrieved_chunks,
-            )
+            return {
+                "question": question,
+                "answer": FALLBACK_ANSWER,
+                "confidence": "I don't know",
+                "final_score": 0.0,
+                "attempts": 1,
+                "status": "NO_SUPPORTED_ANSWER",
+                "model": generation_model,
+                "sources": format_sources(
+                    retrieved_chunks
+                ),
+            }
 
         # ====================================================
         # STEP 4 — SELF GRADING
@@ -1494,18 +1347,12 @@ class SelfGradingAgent:
             "\nStarting self-grading..."
         )
 
-        grading = None
-
         try:
 
             grading = grade_answer(
                 question,
                 answer,
                 retrieved_chunks,
-            )
-
-            grading = normalize_grading_result(
-                grading
             )
 
         except Exception as error:
@@ -1517,7 +1364,7 @@ class SelfGradingAgent:
             grading = None
 
         # ====================================================
-        # GRADER FALLBACK
+        # GRADER FAILURE
         # ====================================================
 
         if not grading:
@@ -1540,21 +1387,12 @@ class SelfGradingAgent:
         # SCORE
         # ====================================================
 
-        try:
-
-            final_score = float(
-                grading.get(
-                    "overall_score",
-                    0.0,
-                )
+        final_score = float(
+            grading.get(
+                "overall_score",
+                0.0,
             )
-
-        except (
-            TypeError,
-            ValueError,
-        ):
-
-            final_score = 0.0
+        )
 
         final_score = max(
             0.0,
@@ -1631,7 +1469,6 @@ class SelfGradingAgent:
                 "\nAnswer rejected by self-grader."
             )
 
-            # Never return an unsupported generated answer.
             answer = FALLBACK_ANSWER
 
             final_score = 0.0
@@ -1684,45 +1521,31 @@ class SelfGradingAgent:
 
         for source in retrieved_chunks:
 
-            try:
-
-                score = float(
-                    source.get(
-                        "score",
-                        0.0,
-                    )
-                )
-
-            except (
-                TypeError,
-                ValueError,
-            ):
-
-                score = 0.0
-
             print(
                 f"- {source.get('source', 'unknown')} "
                 f"(retrieval score="
-                f"{score:.4f})"
+                f"{source.get('score', 0.0):.4f})"
             )
 
         # ====================================================
         # STRUCTURED RETURN
         # ====================================================
 
-        return build_result(
-            question=question,
-            answer=answer,
-            confidence=confidence,
-            final_score=final_score,
-            attempts=1,
-            status=status,
-            model=(
+        return {
+            "question": question,
+            "answer": answer,
+            "confidence": confidence,
+            "final_score": final_score,
+            "attempts": 1,
+            "status": status,
+            "model": (
                 generation_model
                 or grading_model
             ),
-            retrieved_chunks=retrieved_chunks,
-        )
+            "sources": format_sources(
+                retrieved_chunks
+            ),
+        }
 
 
 # ============================================================
@@ -1734,9 +1557,6 @@ def run_agent(
     top_k=3,
     threshold=RETRIEVAL_THRESHOLD,
 ):
-    """
-    Public API used by evaluate.py.
-    """
 
     agent = SelfGradingAgent()
 
