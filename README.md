@@ -1,4 +1,4 @@
-﻿# 🤖 Self-Grading RAG Agent
+# 🤖 Self-Grading RAG Agent
 
 ### Evidence-Grounded Enterprise Policy Assistant
 
@@ -6,7 +6,7 @@ A production-style Retrieval-Augmented Generation (RAG) application that answers
 
 ## 🚀 Live Demo
 
-🔗 **Streamlit App:** https://self-grading-rag-agentgit-pwxgd5jgkdepjelnpzj5de.streamlit.app/
+🔗 **Streamlit App:**  https://self-grading-rag-agentgit-pwxgd5jgkdepjelnpzj5de.streamlit.app/
 
 ## 📌 Project Overview
 
@@ -83,7 +83,7 @@ The agent distinguishes between different failure conditions:
 - **Generative AI:** Google Generative AI
 - **RAG:** Retrieval-Augmented Generation (RAG)
 - **Embeddings:** Sentence Transformers
-- **Vector Database:** FAISS
+- **Similarity Search:** Cosine Similarity
 - **Machine Learning:** Scikit-learn
 - **Data Processing:** NumPy, Pandas
 - **Testing:** Pytest
@@ -111,8 +111,8 @@ Policy documents are split into smaller chunks to improve semantic retrieval.
 ### Step 3 — Embedding Generation
 Each document chunk is converted into a vector representation using sentence-transformer embeddings.
 
-### Step 4 — Vector Retrieval
-FAISS performs similarity search to retrieve the most relevant policy chunks for the user's question.
+### Step 4 — Semantic Retrieval
+Cosine similarity is used to rank the most relevant policy chunks for the user's question.
 
 ### Step 5 — Evidence Support Check
 The retrieved evidence is checked to determine whether it actually supports the question.
@@ -132,7 +132,7 @@ The Streamlit interface presents the answer together with its confidence, score,
 
 ## 🧪 Evaluation
 
-The project includes an end-to-end self-grading test suite with **24 test cases** covering:
+The project includes an end-to-end self-grading test suite with **27 test cases** covering:
 
 - Direct policy questions
 - Numerical reasoning
@@ -142,6 +142,28 @@ The project includes an end-to-end self-grading test suite with **24 test cases*
 - Equipment policies
 - Unsupported questions
 - Questions with no relevant sources
+
+### Latest Evaluation Result
+
+```text
+Completed questions : 27
+Passed questions    : 22
+Failed questions    : 5
+Average score       : 0.63
+Pass rate           : 81.48%
+Average attempts    : 1.00
+
+# Category Summary:
+
+ANSWERABLE           10/10 passed
+UNANSWERABLE          5/5 passed
+PARTIALLY_SUPPORTED   4/5 passed
+TRAP                  3/4 passed
+ADVERSARIAL           Included in evaluation
+
+The evaluation dataset contains 27 cases across ANSWERABLE,
+UNANSWERABLE, PARTIALLY_SUPPORTED, TRAP, and ADVERSARIAL categories.
+
 
 ### Example Evaluation
 
@@ -187,9 +209,21 @@ I could not find this information in the provided policies.
 git clone https://github.com/Mainuddin123/Self-Grading-RAG-Agent.git
 cd Self-Grading-RAG-Agent
 
-2. Create a Virtual Environment : python -m venv.venv
+2. Create a Virtual Environment
 
+```bash
+python -m venv .venv
+
+
+And keep:
+
+```text
 3. Activate the Environment
+
+Windows:
+
+```bash
+.venv\Scripts\activate
 
 Windows: .venv\Scripts\activate
 
@@ -211,7 +245,7 @@ The project includes a dedicated end-to-end self-grading test runner for validat
 ```text
 src/test_agent.py
 
-The test suite contains 24 test cases covering:
+The test suite contains 27 test cases covering:
 
 Direct policy questions
 Annual leave calculations
@@ -278,10 +312,6 @@ VALIDATION: FAIL
 
 The application is deployed using **Streamlit Community Cloud**.
 
-### Live Demo
-
-🔗 **Streamlit App:** PASTE_YOUR_LIVE_APP_URL_HERE
-
 ### Source Code
 
 🔗 **GitHub Repository:**  
@@ -297,13 +327,31 @@ Self-Grading-RAG-Agent/
 ├── app.py
 ├── requirements.txt
 ├── README.md
+├── evaluation_results.json
 │
 ├── data/
-│   └── policy documents
+│   ├── docs/
+│   │   └── *.txt
+│   ├── evaluation.json
+│   └── evaluation_results.json
+│
+├── docs/
+│   └── architecture.md
+│
+├── reports/
+│   └── calibration_results.json
 │
 └── src/
     ├── agent.py
-    └── test_agent.py
+    ├── calibration.py
+    ├── evaluate.py
+    ├── grader.py
+    ├── llm.py
+    ├── rag.py
+    ├── retriever.py
+    ├── run_calibration.py
+    ├── test_agent.py
+    └── test_retriever.py
 
 🎯 Project Objective
 
@@ -329,7 +377,6 @@ The system is designed to provide grounded answers when sufficient evidence is a
 
 🔮 Future Improvements:
 
-Display retrieved evidence text directly in the UI
 Add dedicated RAG evaluation metrics
 Add citation-level verification
 Add document upload functionality
