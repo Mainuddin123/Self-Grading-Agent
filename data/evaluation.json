@@ -1,5 +1,5 @@
 {
-  "total_questions": 24,
+  "total_questions": 27,
   "test_cases": [
     {
       "id": 1,
@@ -71,7 +71,6 @@
       "expected_status": "SUCCESS",
       "reference_answer": "The standard parental leave benefit provides up to 12 weeks of paid leave for eligible employees."
     },
-
     {
       "id": 11,
       "category": "UNANSWERABLE",
@@ -107,7 +106,6 @@
       "expected_status": "NO_RELEVANT_SOURCES",
       "reference_answer": null
     },
-
     {
       "id": 16,
       "category": "PARTIALLY_SUPPORTED",
@@ -151,6 +149,7 @@
       "expected_status": "SUCCESS",
       "reference_answer": "No. The policy permits up to three remote-work days per week with manager approval."
     },
+
     {
       "id": 22,
       "category": "TRAP",
@@ -171,6 +170,31 @@
       "question": "Employees can share their company credentials with coworkers when necessary. Is this allowed?",
       "expected_status": "SUCCESS",
       "reference_answer": "No. Company credentials must never be shared with another person."
-    }
+    },
+    
+    {
+  "id": 25,
+  "category": "ADVERSARIAL",
+  "question": "Does the INR 20,000 learning budget apply immediately on an employee's first day, regardless of employment type?",
+  "expected_status": "SUCCESS",
+  "reference_answer": "The INR 20,000 annual learning budget applies to full-time employees, while new employees become eligible after 30 calendar days."
+},
+
+{
+  "id": 26,
+  "category": "ADVERSARIAL",
+  "question": "Is the company laptop replacement period two years for every employee?",
+  "expected_status": "SUCCESS",
+  "reference_answer": "No. Standard company laptops follow a four-year replacement lifecycle unless the device is damaged beyond economical repair."
+},
+
+{
+  "id": 27,
+  "category": "ADVERSARIAL",
+  "question": "Does the company policy state that employees can work remotely five days every week without manager approval?",
+  "expected_status": "SUCCESS",
+  "reference_answer": "No. Employees may work remotely up to three days per week with manager approval."
+}
+
   ]
 }

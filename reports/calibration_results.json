@@ -1,19 +1,16 @@
 {
-  "total_samples": 24,
-  "average_confidence": 0.7229,
-  "accuracy": 0.7917,
-  "calibration_error": 0.0687,
-  "ece": 0.0896,
+  "total_samples": 27,
+  "average_confidence": 0.5852,
+  "accuracy": 0.8148,
+  "calibration_error": 0.2296,
+  "ece": 0.2481,
+  "over_cautious_abstentions": 1,
+  "dangerous_overconfidence": 0,
   "confidence_breakdown": {
     "high": {
-      "count": 19,
-      "correct": 19,
+      "count": 17,
+      "correct": 17,
       "accuracy": 1.0
-    },
-    "medium": {
-      "count": 0,
-      "correct": 0,
-      "accuracy": 0.0
     },
     "low": {
       "count": 0,
@@ -21,9 +18,9 @@
       "accuracy": 0.0
     },
     "unknown": {
-      "count": 5,
-      "correct": 0,
-      "accuracy": 0.0
+      "count": 10,
+      "correct": 5,
+      "accuracy": 0.5
     }
   }
 }

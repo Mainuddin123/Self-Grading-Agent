@@ -1,4 +1,4 @@
-# 🤖 Self-Grading RAG Agent
+﻿# 🤖 Self-Grading RAG Agent
 
 ### Evidence-Grounded Enterprise Policy Assistant
 
@@ -280,8 +280,7 @@ The application is deployed using **Streamlit Community Cloud**.
 
 ### Live Demo
 
-🔗 **Streamlit App:**
-https://self-grading-rag-agentgit-pwxgd5jgkdepjelnpzj5de.streamlit.app/
+🔗 **Streamlit App:** PASTE_YOUR_LIVE_APP_URL_HERE
 
 ### Source Code
 

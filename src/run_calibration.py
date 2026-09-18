@@ -45,24 +45,15 @@ def main():
             item.get("confidence", "I don't know")
         )
 
-        score = item.get(
-            "final_score",
-            item.get(
-                "overall_score",
-                item.get("score", 0.0)
-            )
-        )
-
-        try:
-            score = float(score)
-        except (TypeError, ValueError):
-            score = 0.0
-
         probability = confidence_to_probability(
             confidence
         )
 
-        correct = score >= 0.75
+        # IMPORTANT:
+        # Use the evaluator's actual pass/fail decision.
+        # This correctly handles "I don't know" when abstention
+        # is the correct decision.
+        correct = bool(item.get("passed", False))
 
         records.append(
             CalibrationRecord(
@@ -75,25 +66,71 @@ def main():
     ece = expected_calibration_error(records)
     statistics = confidence_statistics(records)
 
+    # Count calibration-specific failure modes.
+    over_cautious_abstentions = 0
+    dangerous_overconfidence = 0
+
+    for item in results:
+        confidence = str(
+            item.get("confidence", "I don't know")
+        ).strip().lower()
+
+        passed = bool(item.get("passed", False))
+        category = str(
+            item.get("category", "")
+        ).strip().upper()
+
+        # An answerable question answered with "I don't know"
+        # is an over-cautious abstention.
+        if (
+            confidence in {
+                "i don't know",
+                "don't know",
+                "unknown",
+            }
+            and category in {
+                "ANSWERABLE",
+                "PARTIALLY_SUPPORTED",
+            }
+            and not passed
+        ):
+            over_cautious_abstentions += 1
+
+        # A failed answer given high confidence is dangerous
+        # overconfidence.
+        if (
+            confidence == "high confidence"
+            and not passed
+        ):
+            dangerous_overconfidence += 1
+
     print()
     print("=" * 70)
     print("REAL CALIBRATION EVALUATION")
     print("=" * 70)
 
-    print(f"Total samples        : {summary['count']}")
+    print(f"Total samples              : {summary['count']}")
     print(
-        f"Average confidence   : "
+        f"Average confidence         : "
         f"{summary['average_confidence']:.2f}"
     )
     print(
-        f"Accuracy              : "
+        f"Decision accuracy          : "
         f"{summary['accuracy']:.2f}"
     )
     print(
-        f"Calibration error     : "
+        f"Calibration error           : "
         f"{summary['calibration_error']:.2f}"
     )
-    print(f"ECE                   : {ece:.2f}")
+    print(f"ECE                         : {ece:.2f}")
+    print(
+        f"Over-cautious abstentions   : "
+        f"{over_cautious_abstentions}"
+    )
+    print(
+        f"Dangerous overconfidence    : "
+        f"{dangerous_overconfidence}"
+    )
 
     print()
     print("CONFIDENCE BREAKDOWN")
@@ -113,6 +150,8 @@ def main():
         "accuracy": summary["accuracy"],
         "calibration_error": summary["calibration_error"],
         "ece": ece,
+        "over_cautious_abstentions": over_cautious_abstentions,
+        "dangerous_overconfidence": dangerous_overconfidence,
         "confidence_breakdown": statistics,
     }
 
@@ -120,7 +159,10 @@ def main():
         "reports/calibration_results.json"
     )
 
-    output_file.parent.mkdir(exist_ok=True)
+    output_file.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     with open(
         output_file,
@@ -141,3 +183,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

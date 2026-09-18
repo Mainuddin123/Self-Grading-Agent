@@ -1,8 +1,10 @@
 """
 Calibration utilities for the Self-Grading RAG Agent.
 
-This module converts textual confidence levels into probabilities
-and measures how well confidence matches actual correctness.
+The project uses three confidence outcomes:
+- High confidence
+- Low confidence
+- I don't know
 """
 
 from dataclasses import dataclass
@@ -18,15 +20,12 @@ class CalibrationRecord:
 
 
 def confidence_to_probability(confidence: str) -> float:
-    """
-    Convert the agent's textual confidence into a numeric probability.
-    """
+    """Convert textual confidence into a numeric probability."""
 
     value = confidence.strip().lower()
 
     mapping = {
         "high confidence": 0.90,
-        "medium confidence": 0.65,
         "low confidence": 0.35,
         "i don't know": 0.05,
         "don't know": 0.05,
@@ -39,14 +38,7 @@ def confidence_to_probability(confidence: str) -> float:
 def calibration_summary(
     records: Iterable[CalibrationRecord],
 ) -> dict:
-    """
-    Calculate basic calibration statistics.
-
-    Calibration error is the absolute difference between:
-        average predicted confidence
-        and
-        actual accuracy
-    """
+    """Calculate calibration statistics."""
 
     records = list(records)
 
@@ -72,9 +64,15 @@ def calibration_summary(
 
     return {
         "count": len(records),
-        "average_confidence": round(average_confidence, 4),
-        "accuracy": round(accuracy, 4),
-        "calibration_error": round(calibration_error, 4),
+        "average_confidence": round(
+            average_confidence, 4
+        ),
+        "accuracy": round(
+            accuracy, 4
+        ),
+        "calibration_error": round(
+            calibration_error, 4
+        ),
     }
 
 
@@ -82,9 +80,10 @@ def expected_calibration_error(
     records: Iterable[CalibrationRecord],
 ) -> float:
     """
-    Calculate a simple Expected Calibration Error (ECE).
+    Calculate the project's simple ECE-style metric.
 
-    Each confidence level is treated as a probability prediction.
+    This implementation averages the absolute difference
+    between predicted confidence probability and correctness.
     """
 
     records = list(records)
@@ -92,100 +91,58 @@ def expected_calibration_error(
     if not records:
         return 0.0
 
-    total_error = 0.0
-
-    for record in records:
-        total_error += abs(
-            record.confidence - float(record.correct)
+    total_error = sum(
+        abs(
+            record.confidence
+            - float(record.correct)
         )
+        for record in records
+    )
 
-    return round(total_error / len(records), 4)
+    return round(
+        total_error / len(records),
+        4
+    )
 
 
 def confidence_statistics(
     records: Iterable[CalibrationRecord],
 ) -> dict:
-    """
-    Return correctness statistics grouped by confidence level.
-    """
+    """Group correctness into the three project confidence levels."""
 
     records = list(records)
 
     groups = {
         "high": [],
-        "medium": [],
         "low": [],
         "unknown": [],
     }
 
     for record in records:
+
         if record.confidence >= 0.80:
             groups["high"].append(record.correct)
-        elif record.confidence >= 0.50:
-            groups["medium"].append(record.correct)
+
         elif record.confidence > 0.10:
             groups["low"].append(record.correct)
+
         else:
             groups["unknown"].append(record.correct)
 
     result = {}
 
     for name, values in groups.items():
+
         count = len(values)
         correct = sum(values)
 
         result[name] = {
             "count": count,
             "correct": correct,
-            "accuracy": round(correct / count, 4)
-            if count
-            else 0.0,
+            "accuracy": round(
+                correct / count,
+                4
+            ) if count else 0.0,
         }
 
     return result
-
-
-if __name__ == "__main__":
-    # Small standalone demonstration.
-    records = [
-        CalibrationRecord(0.90, True),
-        CalibrationRecord(0.90, True),
-        CalibrationRecord(0.65, True),
-        CalibrationRecord(0.35, False),
-    ]
-
-    print("=" * 60)
-    print("CALIBRATION CHECK")
-    print("=" * 60)
-
-    summary = calibration_summary(records)
-
-    print(f"Samples             : {summary['count']}")
-    print(
-        f"Average confidence  : "
-        f"{summary['average_confidence']:.2f}"
-    )
-    print(
-        f"Accuracy            : "
-        f"{summary['accuracy']:.2f}"
-    )
-    print(
-        f"Calibration error   : "
-        f"{summary['calibration_error']:.2f}"
-    )
-    print(
-        f"ECE                 : "
-        f"{expected_calibration_error(records):.2f}"
-    )
-
-    print("\nConfidence statistics:")
-
-    for level, stats in confidence_statistics(records).items():
-        print(
-            f"{level:8} | "
-            f"count={stats['count']} | "
-            f"correct={stats['correct']} | "
-            f"accuracy={stats['accuracy']:.2f}"
-        )
-
-        
