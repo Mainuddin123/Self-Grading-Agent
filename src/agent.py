@@ -945,12 +945,29 @@ def get_confidence(score):
 def format_sources(
     retrieved_chunks,
 ):
+    """
+    Format retrieved chunks for the UI and downstream evaluation.
+
+    Preserve the actual retrieved evidence text so the
+    Streamlit interface can display the source passages.
+    """
 
     return [
         {
             "source": chunk.get(
                 "source",
                 "unknown",
+            ),
+            "chunk_id": chunk.get(
+                "chunk_id",
+                None,
+            ),
+            "text": chunk.get(
+                "text",
+                chunk.get(
+                    "content",
+                    "",
+                ),
             ),
             "score": float(
                 chunk.get(
@@ -961,7 +978,6 @@ def format_sources(
         }
         for chunk in retrieved_chunks
     ]
-
 
 # ============================================================
 # DETERMINISTIC GRADING FALLBACK
