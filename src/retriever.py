@@ -1,7 +1,9 @@
 from pathlib import Path
+import hashlib
+import json
 
+import numpy as np
 from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 # ============================================================
@@ -9,6 +11,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 # ============================================================
 
 DOCS_DIR = Path("data/docs")
+INDEX_DIR = Path("data/index")
+
+EMBEDDINGS_FILE = INDEX_DIR / "embeddings.npy"
+CHUNKS_FILE = INDEX_DIR / "chunks.json"
+META_FILE = INDEX_DIR / "metadata.json"
+
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 DEFAULT_TOP_K = 3
@@ -23,16 +31,20 @@ class Retriever:
     """
     Semantic document retriever using Sentence Transformers.
 
-    Pipeline:
-        Documents
-            ↓
-        Paragraph chunks
-            ↓
-        Sentence embeddings
-            ↓
-        Cosine similarity
-            ↓
-        Top-K relevant chunks
+    Documents
+        ↓
+    Paragraph chunks
+        ↓
+    Sentence embeddings
+        ↓
+    Saved embeddings
+        ↓
+    Cosine similarity / dot product
+        ↓
+    Top-K relevant chunks
+
+    Embeddings are generated only when the documents change.
+    Existing embeddings are loaded directly from disk.
     """
 
     def __init__(
@@ -44,17 +56,42 @@ class Retriever:
         self.docs_dir = Path(docs_dir)
         self.model_name = model_name
 
-        print("Loading embedding model...")
-
-        self.model = SentenceTransformer(
-            self.model_name
-        )
-
         self.chunks = []
         self.embeddings = None
 
+        # ----------------------------------------------------
+        # Load document chunks
+        # ----------------------------------------------------
+
         self._load_and_chunk_documents()
-        self._create_embeddings()
+
+        # ----------------------------------------------------
+        # Load existing index or create a new one
+        # ----------------------------------------------------
+
+        if self._index_is_valid():
+
+            print("Loading saved embeddings...")
+
+            self._load_index()
+
+            print(
+                f"Saved embeddings loaded: {len(self.embeddings)}"
+            )
+
+        else:
+
+            print("No valid saved index found.")
+
+            print("Loading embedding model...")
+
+            self.model = SentenceTransformer(
+                self.model_name
+            )
+
+            self._create_embeddings()
+
+            self._save_index()
 
     # ========================================================
     # DOCUMENT LOADING
@@ -118,6 +155,80 @@ class Retriever:
             )
 
     # ========================================================
+    # DOCUMENT HASH
+    # ========================================================
+
+    def _calculate_documents_hash(self):
+        """
+        Create a hash from all policy documents.
+
+        This allows the retriever to detect when
+        documents have changed.
+        """
+
+        hasher = hashlib.sha256()
+
+        files = sorted(
+            self.docs_dir.glob("*.txt")
+        )
+
+        for file_path in files:
+
+            hasher.update(
+                file_path.name.encode("utf-8")
+            )
+
+            hasher.update(
+                file_path.read_bytes()
+            )
+
+        return hasher.hexdigest()
+
+    # ========================================================
+    # INDEX VALIDATION
+    # ========================================================
+
+    def _index_is_valid(self):
+        """
+        Check whether a previously generated index
+        matches the current documents and embedding model.
+        """
+
+        if not (
+            EMBEDDINGS_FILE.exists()
+            and CHUNKS_FILE.exists()
+            and META_FILE.exists()
+        ):
+
+            return False
+
+        try:
+
+            metadata = json.loads(
+                META_FILE.read_text(
+                    encoding="utf-8"
+                )
+            )
+
+            current_hash = (
+                self._calculate_documents_hash()
+            )
+
+            if metadata.get("model_name") != self.model_name:
+
+                return False
+
+            if metadata.get("documents_hash") != current_hash:
+
+                return False
+
+            return True
+
+        except Exception:
+
+            return False
+
+    # ========================================================
     # EMBEDDING CREATION
     # ========================================================
 
@@ -131,14 +242,94 @@ class Retriever:
             for chunk in self.chunks
         ]
 
+        print(
+            "Creating document embeddings..."
+        )
+
         self.embeddings = self.model.encode(
             texts,
             normalize_embeddings=True,
             show_progress_bar=True,
+            convert_to_numpy=True,
+        ).astype(
+            np.float32
         )
 
         print(
             f"Embeddings created: {len(self.embeddings)}"
+        )
+
+    # ========================================================
+    # SAVE INDEX
+    # ========================================================
+
+    def _save_index(self):
+        """
+        Save embeddings and chunks to disk.
+        """
+
+        INDEX_DIR.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        np.save(
+            EMBEDDINGS_FILE,
+            self.embeddings
+        )
+
+        CHUNKS_FILE.write_text(
+            json.dumps(
+                self.chunks,
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8"
+        )
+
+        metadata = {
+            "model_name": self.model_name,
+            "documents_hash": self._calculate_documents_hash(),
+            "chunk_count": len(self.chunks),
+            "embedding_dimension": int(
+                self.embeddings.shape[1]
+            ),
+        }
+
+        META_FILE.write_text(
+            json.dumps(
+                metadata,
+                indent=2
+            ),
+            encoding="utf-8"
+        )
+
+        print(
+            "Embedding index saved successfully."
+        )
+
+    # ========================================================
+    # LOAD INDEX
+    # ========================================================
+
+    def _load_index(self):
+        """
+        Load precomputed embeddings and chunks.
+        """
+
+        self.embeddings = np.load(
+            EMBEDDINGS_FILE
+        )
+
+        self.chunks = json.loads(
+            CHUNKS_FILE.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        # Load model only after confirming the index exists.
+        self.model = SentenceTransformer(
+            self.model_name
         )
 
     # ========================================================
@@ -154,21 +345,8 @@ class Retriever:
         """
         Retrieve the most relevant chunks.
 
-        Parameters
-        ----------
-        query : str
-            User question.
-
-        top_k : int
-            Maximum number of chunks to return.
-
-        threshold : float
-            Minimum cosine similarity required.
-
-        Returns
-        -------
-        list
-            Ranked relevant chunks.
+        Since document embeddings are normalized,
+        cosine similarity is equivalent to the dot product.
         """
 
         if not query or not query.strip():
@@ -180,28 +358,36 @@ class Retriever:
             return []
 
         # ----------------------------------------------------
-        # Create query embedding
+        # Query embedding
         # ----------------------------------------------------
 
         query_embedding = self.model.encode(
             [query.strip()],
             normalize_embeddings=True,
+            convert_to_numpy=True,
+        ).astype(
+            np.float32
         )
 
         # ----------------------------------------------------
-        # Calculate cosine similarity
+        # Cosine similarity
+        #
+        # Both vectors are normalized, so:
+        #
+        # cosine_similarity = dot product
         # ----------------------------------------------------
 
-        similarities = cosine_similarity(
-            query_embedding,
-            self.embeddings,
-        )[0]
+        similarities = (
+            self.embeddings @ query_embedding[0]
+        )
 
         # ----------------------------------------------------
         # Rank chunks
         # ----------------------------------------------------
 
-        ranked_indices = similarities.argsort()[::-1]
+        ranked_indices = np.argsort(
+            similarities
+        )[::-1]
 
         results = []
 
@@ -211,11 +397,13 @@ class Retriever:
                 similarities[index]
             )
 
-            # Stop when similarity becomes too low
             if score < threshold:
+
                 break
 
-            chunk = self.chunks[index]
+            chunk = self.chunks[
+                int(index)
+            ]
 
             results.append(
                 {
@@ -227,6 +415,7 @@ class Retriever:
             )
 
             if len(results) >= top_k:
+
                 break
 
         return results

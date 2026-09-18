@@ -1,0 +1,427 @@
+[
+  {
+    "chunk_id": 0,
+    "source": "01_remote_work_policy.txt",
+    "text": "Remote Work Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "01_remote_work_policy.txt",
+    "text": "Effective date: January 1, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "01_remote_work_policy.txt",
+    "text": "Employees may work remotely up to three days per week with manager approval. Remote work is normally permitted Monday through Friday, but teams may designate specific collaboration days when employees are expected to be onsite."
+  },
+  {
+    "chunk_id": 3,
+    "source": "01_remote_work_policy.txt",
+    "text": "Employees working remotely must remain available during their team's core hours, 10:00 AM to 4:00 PM local time."
+  },
+  {
+    "chunk_id": 4,
+    "source": "01_remote_work_policy.txt",
+    "text": "Requests for fully remote arrangements require approval from the department head and HR."
+  },
+  {
+    "chunk_id": 5,
+    "source": "01_remote_work_policy.txt",
+    "text": "The company may temporarily suspend remote work for business continuity, security, or regulatory reasons."
+  },
+  {
+    "chunk_id": 0,
+    "source": "02_leave_policy.txt",
+    "text": "Leave Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "02_leave_policy.txt",
+    "text": "Effective date: January 1, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "02_leave_policy.txt",
+    "text": "Full-time employees receive 18 days of paid annual leave per calendar year."
+  },
+  {
+    "chunk_id": 3,
+    "source": "02_leave_policy.txt",
+    "text": "Leave requests of five or more consecutive working days should be submitted at least 10 calendar days in advance when practical."
+  },
+  {
+    "chunk_id": 4,
+    "source": "02_leave_policy.txt",
+    "text": "Sick leave may be taken when an employee is unwell; employees should notify their manager as soon as reasonably possible."
+  },
+  {
+    "chunk_id": 5,
+    "source": "02_leave_policy.txt",
+    "text": "Unused annual leave may be carried forward for up to 5 days into the next calendar year."
+  },
+  {
+    "chunk_id": 6,
+    "source": "02_leave_policy.txt",
+    "text": "Contractors are governed by their individual contracts rather than this policy."
+  },
+  {
+    "chunk_id": 0,
+    "source": "03_expense_policy.txt",
+    "text": "Business Expense Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "03_expense_policy.txt",
+    "text": "Effective date: February 1, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "03_expense_policy.txt",
+    "text": "Employees may claim reasonable business expenses that are necessary for approved company work."
+  },
+  {
+    "chunk_id": 3,
+    "source": "03_expense_policy.txt",
+    "text": "Receipts are required for individual expenses above INR 1,500."
+  },
+  {
+    "chunk_id": 4,
+    "source": "03_expense_policy.txt",
+    "text": "Expense reports should normally be submitted within 30 calendar days of the expense date."
+  },
+  {
+    "chunk_id": 5,
+    "source": "03_expense_policy.txt",
+    "text": "Air travel in economy class is the standard for flights under 6 hours."
+  },
+  {
+    "chunk_id": 6,
+    "source": "03_expense_policy.txt",
+    "text": "Business-class travel requires prior written approval from a department head."
+  },
+  {
+    "chunk_id": 7,
+    "source": "03_expense_policy.txt",
+    "text": "Personal expenses are not reimbursable."
+  },
+  {
+    "chunk_id": 0,
+    "source": "04_learning_budget.txt",
+    "text": "Learning and Development Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "04_learning_budget.txt",
+    "text": "Effective date: January 15, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "04_learning_budget.txt",
+    "text": "Each full-time employee has an annual learning budget of INR 20,000 for approved courses, certifications, books, and conferences."
+  },
+  {
+    "chunk_id": 3,
+    "source": "04_learning_budget.txt",
+    "text": "The employee's manager must approve the learning activity before registration or purchase."
+  },
+  {
+    "chunk_id": 4,
+    "source": "04_learning_budget.txt",
+    "text": "Unused learning budget does not convert to cash and does not roll over to the next year."
+  },
+  {
+    "chunk_id": 5,
+    "source": "04_learning_budget.txt",
+    "text": "New employees become eligible after completing 30 calendar days of employment."
+  },
+  {
+    "chunk_id": 0,
+    "source": "05_security_policy.txt",
+    "text": "Information Security Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "05_security_policy.txt",
+    "text": "Effective date: March 1, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "05_security_policy.txt",
+    "text": "Employees must use multi-factor authentication for company accounts where MFA is available."
+  },
+  {
+    "chunk_id": 3,
+    "source": "05_security_policy.txt",
+    "text": "Company credentials must never be shared with another person."
+  },
+  {
+    "chunk_id": 4,
+    "source": "05_security_policy.txt",
+    "text": "Sensitive company files must be stored only in approved company storage systems."
+  },
+  {
+    "chunk_id": 5,
+    "source": "05_security_policy.txt",
+    "text": "Lost or stolen company devices must be reported to IT Security within 24 hours of discovery."
+  },
+  {
+    "chunk_id": 6,
+    "source": "05_security_policy.txt",
+    "text": "Employees must not install unapproved software on managed company devices without IT approval."
+  },
+  {
+    "chunk_id": 0,
+    "source": "06_travel_policy.txt",
+    "text": "Travel Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "06_travel_policy.txt",
+    "text": "Effective date: February 15, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "06_travel_policy.txt",
+    "text": "Domestic travel requires manager approval before booking."
+  },
+  {
+    "chunk_id": 3,
+    "source": "06_travel_policy.txt",
+    "text": "International business travel requires department-head approval and a completed travel request."
+  },
+  {
+    "chunk_id": 4,
+    "source": "06_travel_policy.txt",
+    "text": "Hotel reimbursement is capped at INR 6,000 per night for domestic travel unless an exception is approved in advance."
+  },
+  {
+    "chunk_id": 5,
+    "source": "06_travel_policy.txt",
+    "text": "Employees may select reasonable ground transportation."
+  },
+  {
+    "chunk_id": 6,
+    "source": "06_travel_policy.txt",
+    "text": "Travel advances, when approved, must be reconciled within 15 calendar days after returning from the trip."
+  },
+  {
+    "chunk_id": 0,
+    "source": "07_performance_review.txt",
+    "text": "Performance Review Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "07_performance_review.txt",
+    "text": "Effective date: April 1, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "07_performance_review.txt",
+    "text": "Formal performance reviews occur twice each year, in June and December."
+  },
+  {
+    "chunk_id": 3,
+    "source": "07_performance_review.txt",
+    "text": "Managers are expected to provide written feedback covering outcomes, collaboration, and development goals."
+  },
+  {
+    "chunk_id": 4,
+    "source": "07_performance_review.txt",
+    "text": "Employees may add written comments to their review."
+  },
+  {
+    "chunk_id": 5,
+    "source": "07_performance_review.txt",
+    "text": "A review rating does not by itself guarantee a salary increase, promotion, or bonus."
+  },
+  {
+    "chunk_id": 6,
+    "source": "07_performance_review.txt",
+    "text": "Employees who disagree with factual information in a review should first discuss it with their manager and may then contact HR."
+  },
+  {
+    "chunk_id": 0,
+    "source": "08_equipment_policy.txt",
+    "text": "Company Equipment Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "08_equipment_policy.txt",
+    "text": "Effective date: January 20, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "08_equipment_policy.txt",
+    "text": "Eligible employees may request a company laptop for business purposes."
+  },
+  {
+    "chunk_id": 3,
+    "source": "08_equipment_policy.txt",
+    "text": "Standard company laptops are replaced on a four-year lifecycle unless the device is damaged beyond economical repair."
+  },
+  {
+    "chunk_id": 4,
+    "source": "08_equipment_policy.txt",
+    "text": "Employees must return company equipment when their employment ends."
+  },
+  {
+    "chunk_id": 5,
+    "source": "08_equipment_policy.txt",
+    "text": "Lost or stolen equipment must be reported to IT Security within 24 hours."
+  },
+  {
+    "chunk_id": 6,
+    "source": "08_equipment_policy.txt",
+    "text": "Employees are responsible for reasonable care of company equipment and must not intentionally modify hardware without IT approval."
+  },
+  {
+    "chunk_id": 0,
+    "source": "09_recruitment_referral.txt",
+    "text": "Employee Referral Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "09_recruitment_referral.txt",
+    "text": "Effective date: February 5, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "09_recruitment_referral.txt",
+    "text": "Employees may refer qualified candidates for open positions through the company's internal referral system."
+  },
+  {
+    "chunk_id": 3,
+    "source": "09_recruitment_referral.txt",
+    "text": "A referral bonus of INR 10,000 is available when an eligible referred candidate is hired and completes 90 calendar days of employment."
+  },
+  {
+    "chunk_id": 4,
+    "source": "09_recruitment_referral.txt",
+    "text": "Employees involved in the hiring decision for a referred candidate are not eligible for the referral bonus."
+  },
+  {
+    "chunk_id": 5,
+    "source": "09_recruitment_referral.txt",
+    "text": "The referral bonus is paid through payroll after the eligibility requirements are confirmed."
+  },
+  {
+    "chunk_id": 6,
+    "source": "09_recruitment_referral.txt",
+    "text": "Referrals must be submitted before the candidate enters the final interview stage."
+  },
+  {
+    "chunk_id": 0,
+    "source": "10_data_retention.txt",
+    "text": "Data Retention Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "10_data_retention.txt",
+    "text": "Effective date: March 10, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "10_data_retention.txt",
+    "text": "Business records must be retained according to the company's applicable retention schedule."
+  },
+  {
+    "chunk_id": 3,
+    "source": "10_data_retention.txt",
+    "text": "Financial records must be retained for 7 years."
+  },
+  {
+    "chunk_id": 4,
+    "source": "10_data_retention.txt",
+    "text": "Employee personnel records must be retained for 7 years after the employee's separation date unless a longer period is required by law."
+  },
+  {
+    "chunk_id": 5,
+    "source": "10_data_retention.txt",
+    "text": "Routine system logs are retained for 90 days."
+  },
+  {
+    "chunk_id": 6,
+    "source": "10_data_retention.txt",
+    "text": "Records subject to an active legal hold must not be deleted or altered until the legal hold is formally released."
+  },
+  {
+    "chunk_id": 7,
+    "source": "10_data_retention.txt",
+    "text": "Employees should contact Legal or Compliance when they are unsure whether a record is subject to a retention requirement."
+  },
+  {
+    "chunk_id": 0,
+    "source": "11_code_of_conduct.txt",
+    "text": "Code of Conduct"
+  },
+  {
+    "chunk_id": 1,
+    "source": "11_code_of_conduct.txt",
+    "text": "Effective date: January 5, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "11_code_of_conduct.txt",
+    "text": "Employees are expected to treat colleagues, customers, and business partners with respect and professionalism."
+  },
+  {
+    "chunk_id": 3,
+    "source": "11_code_of_conduct.txt",
+    "text": "Harassment, discrimination, threats, and retaliation are prohibited."
+  },
+  {
+    "chunk_id": 4,
+    "source": "11_code_of_conduct.txt",
+    "text": "Employees must disclose potential conflicts of interest to their manager or Compliance."
+  },
+  {
+    "chunk_id": 5,
+    "source": "11_code_of_conduct.txt",
+    "text": "Company resources must be used primarily for legitimate business purposes and in accordance with applicable company policies."
+  },
+  {
+    "chunk_id": 6,
+    "source": "11_code_of_conduct.txt",
+    "text": "Violations of the Code of Conduct may result in disciplinary action, up to and including termination of employment."
+  },
+  {
+    "chunk_id": 7,
+    "source": "11_code_of_conduct.txt",
+    "text": "Employees who want to report a concern may contact their manager, HR, Compliance, or the confidential reporting channel."
+  },
+  {
+    "chunk_id": 0,
+    "source": "12_parental_benefits.txt",
+    "text": "Parental Benefits Policy"
+  },
+  {
+    "chunk_id": 1,
+    "source": "12_parental_benefits.txt",
+    "text": "Effective date: March 15, 2026."
+  },
+  {
+    "chunk_id": 2,
+    "source": "12_parental_benefits.txt",
+    "text": "Eligible full-time employees may receive parental leave benefits in accordance with the company's parental leave program."
+  },
+  {
+    "chunk_id": 3,
+    "source": "12_parental_benefits.txt",
+    "text": "Employees should submit parental leave requests to HR as early as reasonably possible so that leave arrangements can be planned."
+  },
+  {
+    "chunk_id": 4,
+    "source": "12_parental_benefits.txt",
+    "text": "The standard parental leave benefit provides up to 12 weeks of paid leave for eligible employees."
+  },
+  {
+    "chunk_id": 5,
+    "source": "12_parental_benefits.txt",
+    "text": "Eligibility and benefit details may depend on the employee's employment status and applicable law."
+  },
+  {
+    "chunk_id": 6,
+    "source": "12_parental_benefits.txt",
+    "text": "Employees should contact HR for individual eligibility questions or documentation requirements."
+  }
+]
